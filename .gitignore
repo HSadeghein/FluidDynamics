@@ -356,5 +356,4 @@ bin-int/
 *.sln
 googletest/
 vendors/glfw-3.3.2
-vendors/glad
 vendors/spdlog
