@@ -14,5 +14,5 @@ cmake --build .
 cd ..
 cd ..
 cd ..
-call vendors\bin\premake\premake5.exe vs2019
+call vendors\premake\premake5.exe vs2019
 pause
