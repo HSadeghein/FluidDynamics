@@ -355,3 +355,4 @@ MigrationBackup/
 bin-int/
 *.sln
 googletest/
+*.vcxproj

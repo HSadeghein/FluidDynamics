@@ -19,9 +19,11 @@ namespace FluidEngine
 		}
 
 	};
-
+	class Application;
+	void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	class Window {
 
+		friend class FluidEngine::Application;
 	public:
 		Window(int width, int height, WindowMode windowMode = WindowMode::Windowed);
 		~Window();
@@ -32,6 +34,7 @@ namespace FluidEngine
 		void SetWindowSize(int width, int height);
 		GLFWwindow* GetWindow();
 	protected:
+		void Terminate();
 	private:
 		int m_Width = 800, m_Height = 600;
 		const char* m_Title = "";
