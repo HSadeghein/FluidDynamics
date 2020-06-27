@@ -1,6 +1,11 @@
 #include "Window.h"
+#include "GLFW/glfw3.h"
 namespace FluidEngine
 {
+	void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+	{
+		glViewport(0, 0, width, height);
+	}
 
 	Window::Window(int width, int height, WindowMode windowMode)
 	{
@@ -27,7 +32,11 @@ namespace FluidEngine
 		if (m_Window == nullptr)
 		{
 			Log::GetCoreLogger()->critical("Window has not been created!!!");
+			glfwTerminate();
 		}
+
+		glViewport(0, 0, 800, 700);
+		glfwSetFramebufferSizeCallback(m_Window.get(), framebuffer_size_callback);
 	}
 
 	Window::~Window()
@@ -67,6 +76,10 @@ namespace FluidEngine
 		return m_Window.get();
 	}
 
+	void Window::Terminate()
+	{
+		glfwDestroyWindow(m_Window.get());
+	}
 
 
 }
