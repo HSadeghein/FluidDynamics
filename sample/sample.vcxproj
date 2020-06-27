@@ -83,15 +83,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Log.h" />
-    <ClInclude Include="src\sample.h" />
     <ClInclude Include="src\Window.h" />
+    <ClInclude Include="src\sample.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Log.cpp" />
+    <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\sample.cpp" />
     <ClCompile Include="src\sampletest.cpp" />
-    <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\vendors\glad\glad.vcxproj">
