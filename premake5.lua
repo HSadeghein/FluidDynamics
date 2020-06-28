@@ -39,7 +39,9 @@ project "sample"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/src/imgui/**.h",
+		"%{prj.name}/src/imgui/**.cpp"
 	}
 
 	includedirs
