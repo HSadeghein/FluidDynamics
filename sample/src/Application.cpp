@@ -9,8 +9,8 @@ namespace FluidEngine {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minorVer);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		
-		m_Window = std::shared_ptr<Window>(new Window(800, 600));
-		m_Imgui_Panel = std::make_unique<ImGuiPanel>(m_Window);
+		m_Window = std::make_unique<Window>(800, 600);
+		m_Imgui_Panel = std::make_unique<ImGuiPanel>();
 		glfwMakeContextCurrent(m_Window->GetWindow());
 
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -23,14 +23,14 @@ namespace FluidEngine {
 
 	void Application::MainLoop()
 	{
-		m_Imgui_Panel->InitiateImgui();
+		m_Imgui_Panel->InitiateImgui(m_Window->GetWindow());
 
 		while (!glfwWindowShouldClose(m_Window->GetWindow()))
 		{
 			glfwPollEvents();
 			m_Imgui_Panel->RenderImguiFrame();
 			glfwSwapBuffers(m_Window->GetWindow());
-			m_Imgui_Panel->ClearImguiFrame();
+			m_Imgui_Panel->ClearImguiFrame(m_Window->GetWindow());
 		}
 		m_Imgui_Panel->TerminateImgui();
 		Terminate();

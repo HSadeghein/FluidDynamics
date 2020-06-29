@@ -1,15 +1,10 @@
 #include "ImguiPanel.h"
 namespace FluidEngine {
 
-	ImGuiPanel::ImGuiPanel(std::shared_ptr<Window> window) : m_Window()
-	{
-		m_Window = std::shared_ptr<Window>(window);
-	}
-
-	void ImGuiPanel::InitiateImgui() 
+	void ImGuiPanel::InitiateImgui(GLFWwindow* window)
 	{
 		ImGui::CreateContext();
-		ImGui_ImplGlfw_InitForOpenGL(m_Window->GetWindow(), true);
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init(m_Glsl_Version);
 		ImGui::StyleColorsDark();
 	}
@@ -41,10 +36,10 @@ namespace FluidEngine {
 		}
 		ImGui::Render();
 	}
-	void ImGuiPanel::ClearImguiFrame() 
+	void ImGuiPanel::ClearImguiFrame(GLFWwindow* window)
 	{
 		int display_w, display_h;
-		glfwGetFramebufferSize(m_Window->GetWindow(), &display_w, &display_h);
+		glfwGetFramebufferSize(window, &display_w, &display_h);
 		glViewport(0, 0, display_w, display_h);
 		glClearColor(m_Clear_Color.x, m_Clear_Color.y, m_Clear_Color.z, m_Clear_Color.w);
 		glClear(GL_COLOR_BUFFER_BIT);
