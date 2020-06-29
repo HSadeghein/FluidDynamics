@@ -92,7 +92,6 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
-*.ini
 
 # Chutzpah Test files
 _Chutzpah*
@@ -355,6 +354,8 @@ MigrationBackup/
 .vscode/
 bin-int/
 *.sln
+sample/
+*.ini
 googletest/
 *.vcxproj
 *.vcxproj.*
