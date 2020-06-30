@@ -354,8 +354,8 @@ MigrationBackup/
 .vscode/
 bin-int/
 *.sln
-sample/
-*.ini
+sample/shader/*.spv
+sample/imgui.ini
 googletest/
 *.vcxproj
 *.vcxproj.*

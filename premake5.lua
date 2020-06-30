@@ -41,7 +41,10 @@ project "sample"
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
 		"%{prj.name}/src/imgui/**.h",
-		"%{prj.name}/src/imgui/**.cpp"
+		"%{prj.name}/src/imgui/**.cpp",
+		"%{prj.name}/src/Event/**.h",
+		"%{prj.name}/src/Event/**.cpp",
+		"%{prj.name}/shader/**.hlsl"
 	}
 
 	includedirs
@@ -49,12 +52,12 @@ project "sample"
 		"%{IncludeDir.googletest}",
 		"%{IncludeDir.glad}",
 		"%{IncludeDir.glfw}",
-		"%{IncludeDir.spdlog}"
+		"%{IncludeDir.spdlog}",
 	}
 	libdirs
 	{
 		"%{LibDir.googletest}",
-		"%{LibDir.glfw}"
+		"%{LibDir.glfw}",
 	}
 	links
 	{
