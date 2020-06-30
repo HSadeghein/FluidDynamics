@@ -11,12 +11,18 @@ outputdir = "%{cfg.buildcfg}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["googletest"] = "googletest/googletest/include"
 IncludeDir["glad"] = "vendors/glad/include"
+IncludeDir["glslang"] = "SPIRV-Cross/external/glslang-build/output/include"
+IncludeDir["spirv_tool"] = "SPIRV-Cross/external/spirv-tools-build/output/include"
+IncludeDir["spirv_cross"] = "SPIRV-Cross/include"
 IncludeDir["glfw"] = "vendors/glfw-3.3.2/include"
 IncludeDir["spdlog"] = "vendors/spdlog/include"
 
 LibDir = {}
 LibDir["googletest"] = "googletest/googletest/build/lib/Debug"
 LibDir["glfw"] = "vendors/glfw-3.3.2/lib-vc2019"
+LibDir["glslang"] = "SPIRV-Cross/external/glslang-build/output/lib"
+LibDir["spirv_tool"] = "SPIRV-Cross/external/spirv-tools-build/output/lib"
+LibDir["spirv_cross"] = "SPIRV-Cross/build/Debug"
 include "vendors/glad"
 
 
@@ -55,17 +61,42 @@ project "sample"
 		"%{IncludeDir.glad}",
 		"%{IncludeDir.glfw}",
 		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.glslang}",
+		"%{IncludeDir.spirv_tool}",
+		"%{IncludeDir.spirv_cross}"
 	}
 	libdirs
 	{
 		"%{LibDir.googletest}",
 		"%{LibDir.glfw}",
+		"%{LibDir.glslang}",
+		"%{LibDir.spirv_tool}",
+		"%{LibDir.spirv_cross}"
 	}
 	links
 	{
 		"gtest_maind",
 		"gtestd",
+		"SPIRV-Tools",
+		"SPIRV-Tools-link",
+		"SPIRV-Tools-opt",
+		"SPIRV-Tools-reduce",
+		"SPIRV-Tools-shared",
+		"glslang",
+		"HLSL",
+		"OGLCompiler",
+		"OSDependent",
+		"SPIRV",
+		"SPVRemapper",
 		"glad",
 		"glfw3",
-		"opengl32"
+		"opengl32",
+		"spirv-cross-cd",
+		"spirv-cross-cored",
+		"spirv-cross-cppd",
+		"spirv-cross-glsld",
+		"spirv-cross-hlsld",
+		"spirv-cross-msld",
+		"spirv-cross-reflectd",
+		"spirv-cross-utild"
 	}
