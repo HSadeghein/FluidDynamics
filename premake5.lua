@@ -44,7 +44,9 @@ project "sample"
 		"%{prj.name}/src/imgui/**.cpp",
 		"%{prj.name}/src/Event/**.h",
 		"%{prj.name}/src/Event/**.cpp",
-		"%{prj.name}/shader/**.hlsl"
+		"%{prj.name}/shader/**.hlsl",
+		"%{prj.name}/shader/**.vert",
+		"%{prj.name}/shader/**.spv"
 	}
 
 	includedirs
