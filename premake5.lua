@@ -11,7 +11,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["googletest"] = "googletest/googletest/include"
 IncludeDir["glad"] = "vendors/glad/include"
-IncludeDir["glslang"] = "SPIRV-Cross/external/glslang-build/output/include"
+IncludeDir["glslang"] = "SPIRV-Cross/external/glslang-build/output/include/glslang/Include"
 IncludeDir["spirv_tool"] = "SPIRV-Cross/external/spirv-tools-build/output/include"
 IncludeDir["spirv_cross"] = "SPIRV-Cross/include"
 IncludeDir["glfw"] = "vendors/glfw-3.3.2/include"
@@ -46,24 +46,26 @@ project "sample"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/src/**.hpp",
 		"%{prj.name}/src/imgui/**.h",
 		"%{prj.name}/src/imgui/**.cpp",
 		"%{prj.name}/src/Event/**.h",
 		"%{prj.name}/src/Event/**.cpp",
 		"%{prj.name}/shader/**.hlsl",
 		"%{prj.name}/shader/**.vert",
-		"%{prj.name}/shader/**.spv"
+		"%{prj.name}/shader/**.frag",
+		"%{prj.name}/shader/**.spv",
 	}
 
 	includedirs
 	{
 		"%{IncludeDir.googletest}",
 		"%{IncludeDir.glad}",
-		"%{IncludeDir.glfw}",
-		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.glslang}",
 		"%{IncludeDir.spirv_tool}",
-		"%{IncludeDir.spirv_cross}"
+		"%{IncludeDir.spirv_cross}",
+		"%{IncludeDir.glfw}",
+		"%{IncludeDir.spdlog}",
 	}
 	libdirs
 	{
@@ -77,20 +79,20 @@ project "sample"
 	{
 		"gtest_maind",
 		"gtestd",
-		"SPIRV-Tools",
-		"SPIRV-Tools-link",
-		"SPIRV-Tools-opt",
-		"SPIRV-Tools-reduce",
-		"SPIRV-Tools-shared",
+		"glad",
+		"glfw3",
+		"opengl32",
 		"glslang",
 		"HLSL",
 		"OGLCompiler",
 		"OSDependent",
 		"SPIRV",
 		"SPVRemapper",
-		"glad",
-		"glfw3",
-		"opengl32",
+		"SPIRV-Tools",
+		"SPIRV-Tools-link",
+		"SPIRV-Tools-opt",
+		"SPIRV-Tools-reduce",
+		"SPIRV-Tools-shared",
 		"spirv-cross-cd",
 		"spirv-cross-cored",
 		"spirv-cross-cppd",

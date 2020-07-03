@@ -1,4 +1,23 @@
-float4 main( float4 pos : POSITION ) : SV_POSITION
+cbuffer MatrixBuffer 
 {
-	return pos;
+	matrix worldMatrix;
+	matrix viewMatrix;
+	matrix projectionMatrix;
+};
+
+struct VertexInput
+{
+	float4 position : Position;
+};
+
+struct FragmentInput
+{
+	float4 position : SV_Position;
+};
+
+FragmentInput main(VertexInput input) 
+{
+	FragmentInput output;
+	output.position = input.position;
+	return output;
 }
