@@ -2,5 +2,5 @@
 	path = vendors/spdlog
 	url = https://github.com/gabime/spdlog
 [submodule "SPIRV-Cross/"]
-	path = SPIRV-Cross/
+	path = vendors/SPIRV-Cross/
 	url = https://github.com/KhronosGroup/SPIRV-Cross

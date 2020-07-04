@@ -1,5 +1,5 @@
 struct FragmentInput {
-	float4 position : Position;
+	float4 position : SV_Position;
 };
 
 float4 main(FragmentInput input) : SV_TARGET

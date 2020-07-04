@@ -11,18 +11,18 @@ outputdir = "%{cfg.buildcfg}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["googletest"] = "googletest/googletest/include"
 IncludeDir["glad"] = "vendors/glad/include"
-IncludeDir["glslang"] = "SPIRV-Cross/external/glslang-build/output/include/glslang/Include"
-IncludeDir["spirv_tool"] = "SPIRV-Cross/external/spirv-tools-build/output/include"
-IncludeDir["spirv_cross"] = "SPIRV-Cross/include"
+IncludeDir["glslang"] = "vendors/SPIRV-Cross/external/glslang-build/output/include/glslang/Include"
+IncludeDir["spirv_tool"] = "vendors/SPIRV-Cross/external/spirv-tools-build/output/include"
+IncludeDir["spirv_cross"] = "vendors/SPIRV-Cross/include"
 IncludeDir["glfw"] = "vendors/glfw-3.3.2/include"
 IncludeDir["spdlog"] = "vendors/spdlog/include"
 
 LibDir = {}
 LibDir["googletest"] = "googletest/googletest/build/lib/Debug"
 LibDir["glfw"] = "vendors/glfw-3.3.2/lib-vc2019"
-LibDir["glslang"] = "SPIRV-Cross/external/glslang-build/output/lib"
-LibDir["spirv_tool"] = "SPIRV-Cross/external/spirv-tools-build/output/lib"
-LibDir["spirv_cross"] = "SPIRV-Cross/build/Debug"
+LibDir["glslang"] = "vendors/SPIRV-Cross/external/glslang-build/output/lib"
+LibDir["spirv_tool"] = "vendors/SPIRV-Cross/external/spirv-tools-build/output/lib"
+LibDir["spirv_cross"] = "vendors/SPIRV-Cross/build/Debug"
 include "vendors/glad"
 
 

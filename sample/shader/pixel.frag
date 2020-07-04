@@ -8,7 +8,6 @@ struct FragmentInput
     vec4 position;
 };
 
-in vec4 input_position;
 layout(location = 0) out vec4 _entryPointOutput;
 
 vec4 _main(FragmentInput _input)
@@ -19,7 +18,7 @@ vec4 _main(FragmentInput _input)
 void main()
 {
     FragmentInput _input;
-    _input.position = input_position;
+    _input.position = gl_FragCoord;
     FragmentInput param = _input;
     _entryPointOutput = _main(param);
 }

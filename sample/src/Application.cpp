@@ -27,14 +27,14 @@ namespace FluidEngine {
 
 	void Application::MainLoop()
 	{
-		GLuint program, VAO, VBO;
-		ConfigureGL(&program, &VAO, &VBO);
+		GLuint program, VAO, VBO, IBO;
+		ConfigureGL(&program, &VAO, &VBO, &IBO);
 		m_Imgui_Panel->InitiateImgui(m_Window->GetWindow());
 		while (!glfwWindowShouldClose(m_Window->GetWindow()))
 		{
 			glfwPollEvents();
-			DrawGL(program, VAO, VBO);
 			m_Imgui_Panel->RenderImguiFrame();
+			DrawGL(program, VAO, VBO);
 			glfwSwapBuffers(m_Window->GetWindow());
 			m_Imgui_Panel->ClearImguiFrame(m_Window->GetWindow());	
 		}
@@ -42,20 +42,34 @@ namespace FluidEngine {
 		Terminate();
 	}
 
-	void Application::ConfigureGL(GLuint* program, GLuint* VAO, GLuint* VBO)
+	void Application::ConfigureGL(GLuint* program, GLuint* VAO, GLuint* VBO, GLuint *IBO)
 	{
-		const float positions[12] = {
-			0.5f, 0.5f, 0.0f, 1.0f,
-			0.0f, -0.5f, 0.0f, 1.0f,
-			0.0f, 0.5f, 0.0f, 1.0f
+		const float positions[] = {
+			0.5f, 0.5f, 0.0f, 1.0f, 
+			0.5f, -0.5f, 0.0f, 1.0f,
+			-0.5f, -0.5f, 0.0f, 1.0f,
+			-0.5f, 0.5f, 0.0f, 1.0 
 		};
+		unsigned int indices[] = {
+			0, 1, 3,
+			1, 2, 3
+		};
+
 		glGenBuffers(1, VBO);
+		glGenBuffers(1, IBO);
 		glGenVertexArrays(1, VAO);
+
 		glBindVertexArray(*VAO);
+
 		glBindBuffer(GL_ARRAY_BUFFER, *VBO);
-		glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), positions, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *IBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
 		glEnableVertexAttribArray(0);
+
 		*program = CompileProgram();
 	}
 
@@ -63,7 +77,8 @@ namespace FluidEngine {
 	{
 		glUseProgram(program);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
 	}
 
 	GLuint Application::LoadGlslShader(const char* filename, GLenum shaderType, bool checkErrors)
@@ -72,36 +87,24 @@ namespace FluidEngine {
 		FILE* fp;
 		size_t filesize;
 		char* data;
-
 		fp = fopen(filename, "rb");
-
 		if (!fp)
 			return 0;
-
 		fseek(fp, 0, SEEK_END);
 		filesize = ftell(fp);
 		fseek(fp, 0, SEEK_SET);
-
 		data = new char[filesize + 1];
-
 		if (!data)
 			return 0;
-
 		fread(data, 1, filesize, fp);
 		data[filesize] = 0;
 		fclose(fp);
-
 		result = glCreateShader(shaderType);
-
 		if (!result)
 			return 0;
-
 		glShaderSource(result, 1, &data, NULL);
-
 		delete[] data;
-
 		glCompileShader(result);
-
 		if (checkErrors)
 		{
 			GLint status = 0;
@@ -118,7 +121,6 @@ namespace FluidEngine {
 				return 0;
 			}
 		}
-
 		return result;
 	}
 

@@ -4,6 +4,6 @@
 	c. Write "git update" command.
 2.Run the checkout_glslang_spirv_tools.sh bash file.
 3.Run the build_glslang_spirv_tools.sh bash file.
-4.You can access to the glslangValidator.exe in {$SoloutionDir}/SPIRV-Cross/external/glslang-build/output/bin.
+4.You can access to the glslangValidator.exe in {$SoloutionDir}/vendors/SPIRV-Cross/external/glslang-build/output/bin.
 5.Build the SPIRV-Cross with cmake.
-6.You can access to the spirv-cross.exe in {$SoloutionDir}/SPIRV-Cross/build/Debug.
+6.You can access to the spirv-cross.exe in {$SoloutionDir}/vendors/SPIRV-Cross/build/Debug.
