@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 
 
 	FluidEngine::Application app;
-	app.Init(0, 4);
+	app.Init(4, 0);
 	app.MainLoop();
 
 

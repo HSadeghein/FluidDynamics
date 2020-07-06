@@ -2,20 +2,27 @@
 #include <glad/glad.h>
 #include <memory>
 #include "Window.h"
+#include "Event/IEvent.h"
+#include "GameTimer.h"
 namespace FluidEngine
 {
 
 	class Application 
 	{
 	public:
-		int Init(int minorVer, int majorVer);
+		int Init(int majorVer, int minorVer);
 		void MainLoop();
 	protected:
 		void Terminate();
+
+		void CalculateFrameStats();
 	private:
 		std::unique_ptr<Window> m_Window;
 		int m_GlfwMinorVersion = 0;
 		int m_GlfwMajorVersion = 4;
+
+
+		GameTimer m_Timer;
 
 	};
 }
