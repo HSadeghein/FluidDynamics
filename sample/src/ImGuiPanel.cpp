@@ -1,4 +1,4 @@
-#include "ImguiPanel.h"
+﻿#include "ImguiPanel.h"
 namespace FluidEngine {
 
 	void ImGuiPanel::InitiateImgui(GLFWwindow* window)
@@ -43,7 +43,9 @@ namespace FluidEngine {
 		glViewport(0, 0, display_w, display_h);
 		glClearColor(m_Clear_Color.x, m_Clear_Color.y, m_Clear_Color.z, m_Clear_Color.w);
 		glClear(GL_COLOR_BUFFER_BIT);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		
 	}
 	void ImGuiPanel::TerminateImgui()
 	{

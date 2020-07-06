@@ -1,7 +1,7 @@
 1.Download the SPIRV-Cross project by .gitmodule
 	a. Open your git bash in the soloution directory.
-	b. Wrirte "git init" command.
-	c. Write "git update" command.
+	b. Wrirte "git submodule init" command.
+	c. Write "git submodule update" command.
 2.Run the checkout_glslang_spirv_tools.sh bash file.
 3.Run the build_glslang_spirv_tools.sh bash file.
 4.You can access to the glslangValidator.exe in {$SoloutionDir}/vendors/SPIRV-Cross/external/glslang-build/output/bin.

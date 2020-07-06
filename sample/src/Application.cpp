@@ -1,6 +1,24 @@
 #include "Application.h"
 #include <iostream>
 
+#define ASSERT(x) if(!(x)) __debugbreak();
+
+#define GL_CHECK_ERR(x) GlClearErrors();\
+	x;\
+	ASSERT(GlLogErrors(#x, __FILE__, __LINE__))
+
+static void GlClearErrors() {
+	while (glGetError() != GL_NO_ERROR);
+}
+
+static bool GlLogErrors(const char* function, const char* filename, const int line) {
+	while (GLenum error = glGetError() ) {
+		std::cout << error << " : " << function << " : " << filename << " : " << line;
+		return false;
+	}
+	return true;
+}
+
 namespace FluidEngine {
 
 	int Application::Init(int minorVer, int majorVer)
@@ -30,13 +48,14 @@ namespace FluidEngine {
 		GLuint program, VAO, VBO, IBO;
 		ConfigureGL(&program, &VAO, &VBO, &IBO);
 		m_Imgui_Panel->InitiateImgui(m_Window->GetWindow());
+		glUseProgram(program);
 		while (!glfwWindowShouldClose(m_Window->GetWindow()))
 		{
 			glfwPollEvents();
-			m_Imgui_Panel->RenderImguiFrame();
 			DrawGL(program, VAO, VBO);
+			m_Imgui_Panel->RenderImguiFrame();
 			glfwSwapBuffers(m_Window->GetWindow());
-			m_Imgui_Panel->ClearImguiFrame(m_Window->GetWindow());	
+			m_Imgui_Panel->ClearImguiFrame(m_Window->GetWindow());
 		}
 		m_Imgui_Panel->TerminateImgui();
 		Terminate();
@@ -75,10 +94,7 @@ namespace FluidEngine {
 
 	void Application::DrawGL(GLuint program, GLuint VAO, GLuint VBO)
 	{
-		glUseProgram(program);
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
 	}
 
 	GLuint Application::LoadGlslShader(const char* filename, GLenum shaderType, bool checkErrors)
