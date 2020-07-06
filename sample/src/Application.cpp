@@ -1,38 +1,34 @@
 #include "Application.h"
+#include <functional>
 #include <iostream>
+namespace FluidEngine
+{
 
-#define ASSERT(x) if(!(x)) __debugbreak();
-
-#define GL_CHECK_ERR(x) GlClearErrors();\
-	x;\
-	ASSERT(GlLogErrors(#x, __FILE__, __LINE__))
-
-static void GlClearErrors() {
-	while (glGetError() != GL_NO_ERROR);
-}
-
-static bool GlLogErrors(const char* function, const char* filename, const int line) {
-	while (GLenum error = glGetError() ) {
-		std::cout << error << " : " << function << " : " << filename << " : " << line;
-		return false;
+	void error_call_back(int error, const char* description)
+	{
+		Log::GetCoreLogger()->error("Error: {}", description);
 	}
-	return true;
-}
-
-namespace FluidEngine {
-
 	int Application::Init(int minorVer, int majorVer)
 	{
+
+		glfwSetErrorCallback(error_call_back);
 		glfwInit();
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, majorVer);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minorVer);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-		m_Window = std::make_unique<Window>(800, 600);
+		WindowProps props(600, 800, "Hassan");
+		m_Window = std::make_unique<Window>(props);
+		//std bind --> bind a function or a member to a another function
+		//in this line we binded applicaion::onevent function, the first aurgument indicates the concept of the function, second argument indicates which function exactly we want to use
+		//the third argument indicates we want to pass a variables or some predefined value.
+		m_Window->SetEventCallback(std::bind(&Window::OnEvent, m_Window.get(), std::placeholders::_1));
 		m_Imgui_Panel = std::make_unique<ImGuiPanel>();
 		glfwMakeContextCurrent(m_Window->GetWindow());
-		
+
 		ConvAllHlslToGlsl();
+
+		//FPS cap
+		glfwSwapInterval(0);
 
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{
@@ -40,6 +36,7 @@ namespace FluidEngine {
 			return -1;
 		}
 
+		m_Timer.Reset();
 		return 1;
 	}
 
@@ -48,12 +45,17 @@ namespace FluidEngine {
 		GLuint program, VAO, VBO, IBO;
 		ConfigureGL(&program, &VAO, &VBO, &IBO);
 		m_Imgui_Panel->InitiateImgui(m_Window->GetWindow());
-		glUseProgram(program);
 		while (!glfwWindowShouldClose(m_Window->GetWindow()))
 		{
+			m_Timer.Tick();
+			glfwSwapBuffers(m_Window->GetWindow());
 			glfwPollEvents();
-			DrawGL(program, VAO, VBO);
+			//auto dt = m_Timer.DeltaTime();
+			//Log::GetCoreLogger()->info("delta time is {}", dt);
+			CalculateFrameStats();
+			glfwPollEvents();
 			m_Imgui_Panel->RenderImguiFrame();
+			DrawGL(program, VAO, VBO);
 			glfwSwapBuffers(m_Window->GetWindow());
 			m_Imgui_Panel->ClearImguiFrame(m_Window->GetWindow());
 		}
@@ -61,18 +63,16 @@ namespace FluidEngine {
 		Terminate();
 	}
 
-	void Application::ConfigureGL(GLuint* program, GLuint* VAO, GLuint* VBO, GLuint *IBO)
+	void Application::ConfigureGL(GLuint* program, GLuint* VAO, GLuint* VBO, GLuint* IBO)
 	{
 		const float positions[] = {
-			0.5f, 0.5f, 0.0f, 1.0f, 
+			0.5f, 0.5f, 0.0f, 1.0f,
 			0.5f, -0.5f, 0.0f, 1.0f,
 			-0.5f, -0.5f, 0.0f, 1.0f,
-			-0.5f, 0.5f, 0.0f, 1.0 
-		};
+			-0.5f, 0.5f, 0.0f, 1.0 };
 		unsigned int indices[] = {
 			0, 1, 3,
-			1, 2, 3
-		};
+			1, 2, 3 };
 
 		glGenBuffers(1, VBO);
 		glGenBuffers(1, IBO);
@@ -94,7 +94,10 @@ namespace FluidEngine {
 
 	void Application::DrawGL(GLuint program, GLuint VAO, GLuint VBO)
 	{
+		glUseProgram(program);
 		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
 	}
 
 	GLuint Application::LoadGlslShader(const char* filename, GLenum shaderType, bool checkErrors)
@@ -156,18 +159,20 @@ namespace FluidEngine {
 		return program;
 	}
 
-	void Application::ConvAllHlslToGlsl() 
+	void Application::ConvAllHlslToGlsl()
 	{
 		LPCWSTR glslangArgs[2] = { L"glslangValidator.exe -S vert -e main -o ", L" -V -D " };
 		LPCWSTR spirvArgs[2] = { L"spirv-cross.exe --version 330 --no-es ", L" --output " };
 		ConvHlslToGlsl(L"shader\\VertexShader.hlsl", L"shader\\vertex.spv", L"shader\\vertex.vert", glslangArgs, spirvArgs);
-		glslangArgs[0] = L"glslangValidator.exe -S frag -e main -o "; glslangArgs[1] = L" -V -D ";
-		spirvArgs[0] = L"spirv-cross.exe --version 330 --no-es "; spirvArgs[1] = L" --output ";
+		glslangArgs[0] = L"glslangValidator.exe -S frag -e main -o ";
+		glslangArgs[1] = L" -V -D ";
+		spirvArgs[0] = L"spirv-cross.exe --version 330 --no-es ";
+		spirvArgs[1] = L" --output ";
 		ConvHlslToGlsl(L"shader\\PixelShader.hlsl", L"shader\\pixel.spv", L"shader\\pixel.frag", glslangArgs, spirvArgs);
 	}
 
 	void Application::ConvHlslToGlsl(LPCWSTR sourceName, LPCWSTR targetSPVName, LPCWSTR targetName, LPCWSTR glslangArgs[2],
-		LPCWSTR spirvArgs[2]) 
+		LPCWSTR spirvArgs[2])
 	{
 		m_HlslToGlslConverter = std::make_unique<HlslToGlslConverter>(glslangExeDir, spirvCrossExeDir, sourceName,
 			targetSPVName, targetName);
@@ -182,5 +187,24 @@ namespace FluidEngine {
 		m_Window->Terminate();
 		glfwTerminate();
 	}
-}
 
+	void Application::CalculateFrameStats()
+	{
+		static int frameCount = 0;
+		static float timeElapsed = 0;
+
+		frameCount++;
+
+		if ((m_Timer.TotalTime() - timeElapsed) >= 1.0f)
+		{
+			float fps = (float)frameCount;
+			float mspf = 1000.0f / fps;
+
+			Log::GetCoreLogger()->info("FPS is {}", fps);
+			Log::GetCoreLogger()->info("Frame per milisecond is {}", mspf);
+
+			frameCount = 0;
+			timeElapsed += 1.0f;
+		}
+	}
+}

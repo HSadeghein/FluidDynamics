@@ -2,14 +2,11 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 #include "Log.h"
+#include <functional>
+#include "IWindow.h"
+
 namespace FluidEngine
 {
-	enum class WindowMode
-	{
-		FullScreen,
-		BorderlessWindow,
-		Windowed
-	};
 
 	struct DestroyglfwWin {
 
@@ -20,31 +17,57 @@ namespace FluidEngine
 
 	};
 	class Application;
-	void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-	class Window {
+	class Window : public IWindow {
 
 		friend class FluidEngine::Application;
 	public:
-		Window(int width, int height, WindowMode windowMode = WindowMode::Windowed);
+		Window(const WindowProps& props);
 		~Window();
-		void SetWidth(int width);
-		void SetHeight(int height);
-		int GetHeight();
-		int GetWidth();
-		void SetWindowSize(int width, int height);
+		void SetWidth(int width) override;
+		void SetHeight(int height) override;
+		int GetHeight() const override;
+		int GetWidth() const override;
+		void SetWindowSize(int width, int height) override;
+		void OnUpdate() override;
 		GLFWwindow* GetWindow();
+
+		void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallBack = callback; };
+
+
+		void OnEvent(IEvent& e) override;
+
+
+		bool OnWindowSizeChanged(WindowSizeChangedEvent& e) override;
+
+		bool OnWindowClose(WindowClosedEvent& e) override;
+
+		bool OnKeyPressed(KeyPressedEvent& e) override;
+
+		bool OnKeyReleased(KeyReleasedEvent& e) override;
+
+
 	protected:
 		void Terminate();
+
+
+
 	private:
-		int m_Width = 800, m_Height = 600;
-		const char* m_Title = "";
-		bool m_IsHidden = false;
-		WindowMode m_WindowMode = WindowMode::Windowed;
-
-		std::unique_ptr<GLFWwindow, DestroyglfwWin> m_Window;
+		void Init(const WindowProps& props);
 
 
+		GLFWwindow* m_Window;
 
+
+		struct WindowData
+		{
+			int Width, Height;
+			const char* Ttile;
+			bool VSync;
+			WindowMode WindowMode;
+			EventCallbackFn EventCallBack;
+
+		};
+		WindowData m_Data;
 
 	};
 
