@@ -8,8 +8,9 @@ namespace FluidEngine {
 		ImGui_ImplOpenGL3_Init(m_Glsl_Version);
 		ImGui::StyleColorsDark();
 	}
-	void ImGuiPanel::RenderImguiFrame()
+	void ImGuiPanel::RenderImguiFrame(GLFWwindow* window)
 	{
+		int display_w, display_h;
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -35,10 +36,6 @@ namespace FluidEngine {
 			ImGui::End();
 		}
 		ImGui::Render();
-	}
-	void ImGuiPanel::AssignImguiViewport(GLFWwindow* window)
-	{
-		int display_w, display_h;
 		glfwGetFramebufferSize(window, &display_w, &display_h);
 		glViewport(0, 0, display_w, display_h);
 		glClearColor(m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, m_ClearColor.w);

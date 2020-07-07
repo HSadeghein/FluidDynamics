@@ -11,8 +11,7 @@ namespace FluidEngine {
 		ImGuiPanel(){}
 		~ImGuiPanel() {}
 		void InitiateImgui(GLFWwindow* window);
-		void RenderImguiFrame();
-		void AssignImguiViewport(GLFWwindow* window);
+		void RenderImguiFrame(GLFWwindow* window);
 		void DrawImgui();
 		void TerminateImgui();
 	private:

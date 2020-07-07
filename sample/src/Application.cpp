@@ -29,7 +29,6 @@ namespace FluidEngine
 		//in this line we binded applicaion::onevent function, the first aurgument indicates the concept of the function, second argument indicates which function exactly we want to use
 		//the third argument indicates we want to pass a variables or some predefined value.
 		m_Window->SetEventCallback(std::bind(&Window::OnEvent, m_Window.get(), std::placeholders::_1));
-		m_Imgui_Panel = std::make_unique<ImGuiPanel>();
 		glfwMakeContextCurrent(m_Window->GetWindow());
 
 		//FPS cap
@@ -41,7 +40,6 @@ namespace FluidEngine
 			return -1;
 		}
 
-		m_Timer.Reset();
 		return 1;
 	}
 
@@ -69,58 +67,31 @@ namespace FluidEngine
 			shaderControler.AddShader({ "shader/vertex.vert", GL_VERTEX_SHADER, true});
 			shaderControler.AddShader({ "shader/pixel.frag", GL_FRAGMENT_SHADER, true});
 			shaderControler.CreateShaderProgram();
-			m_Imgui_Panel->InitiateImgui(m_Window->GetWindow());
 			shaderControler.UseShaderProgram();
+			ImGuiPanel panel;
+			panel.InitiateImgui(m_Window->GetWindow());
+			Renderer renderer;
+
 			while (!glfwWindowShouldClose(m_Window->GetWindow()))
 			{
-				m_Timer.Tick();
+				renderer.Tick();
 				glfwPollEvents();
 				//auto dt = m_Timer.DeltaTime();
 				//Log::GetCoreLogger()->info("delta time is {}", dt);
-				CalculateFrameStats();
-				glfwPollEvents();
-				m_Imgui_Panel->RenderImguiFrame();
-				va.Bind();
-				ib.Bind();
+				renderer.CalculateFrameStats();
+				panel.RenderImguiFrame(m_Window->GetWindow());
 				glfwSwapBuffers(m_Window->GetWindow());
-				m_Imgui_Panel->AssignImguiViewport(m_Window->GetWindow());
-				glClear(GL_COLOR_BUFFER_BIT);
-				DrawGL();
+				renderer.Clear();
+				renderer.Draw(va, ib, panel);
 			}
-			m_Imgui_Panel->TerminateImgui();
+			panel.TerminateImgui();
 		}
 		Terminate();
-	}
-
-	void Application::DrawGL()
-	{
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		m_Imgui_Panel->DrawImgui();
 	}
 
 	void Application::Terminate()
 	{
 		m_Window->Terminate();
 		glfwTerminate();
-	}
-
-	void Application::CalculateFrameStats()
-	{
-		static int frameCount = 0;
-		static float timeElapsed = 0;
-
-		frameCount++;
-
-		if ((m_Timer.TotalTime() - timeElapsed) >= 1.0f)
-		{
-			float fps = (float)frameCount;
-			float mspf = 1000.0f / fps;
-
-			Log::GetCoreLogger()->info("FPS is {}", fps);
-			Log::GetCoreLogger()->info("Frame per milisecond is {}", mspf);
-
-			frameCount = 0;
-			timeElapsed += 1.0f;
-		}
 	}
 }
