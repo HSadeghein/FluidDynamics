@@ -79,4 +79,27 @@ namespace FluidEngine {
 	{
 		GL_CHECK_ERROR(glUseProgram(m_RenderID));
 	}
+
+	void ShaderControler::ConvHlslToGlsl(LPCWSTR sourceName, LPCWSTR targetSPVName, LPCWSTR targetName, LPCWSTR glslangArgs[2],
+		LPCWSTR spirvArgs[2])
+	{
+		m_HlslToGlslConverter = std::make_unique<HlslToGlslConverter>(glslangExeDir, spirvCrossExeDir, sourceName,
+			targetSPVName, targetName);
+		std::wstring wparams = glslangArgs[0] + std::wstring(m_HlslToGlslConverter->m_TargetSPVName) + glslangArgs[1] + std::wstring(m_HlslToGlslConverter->m_SourceFileName);
+		m_HlslToGlslConverter->ConvertToSPVFrom(&wparams[0]);
+		wparams = spirvArgs[0] + std::wstring(m_HlslToGlslConverter->m_TargetSPVName) + spirvArgs[1] + std::wstring(m_HlslToGlslConverter->m_TargetFileName);
+		m_HlslToGlslConverter->ConvertWithExeFromSPVTo(&wparams[0]);
+	}
+
+	void ShaderControler::ConvAllHlslToGlsl()
+	{
+		LPCWSTR glslangArgs[2] = { L"glslangValidator.exe -S vert -e main -o ", L" -V -D " };
+		LPCWSTR spirvArgs[2] = { L"spirv-cross.exe --version 330 --no-es ", L" --output " };
+		ConvHlslToGlsl(L"shader\\VertexShader.hlsl", L"shader\\vertex.spv", L"shader\\vertex.vert", glslangArgs, spirvArgs);
+		glslangArgs[0] = L"glslangValidator.exe -S frag -e main -o ";
+		glslangArgs[1] = L" -V -D ";
+		spirvArgs[0] = L"spirv-cross.exe --version 330 --no-es ";
+		spirvArgs[1] = L" --output ";
+		ConvHlslToGlsl(L"shader\\PixelShader.hlsl", L"shader\\pixel.spv", L"shader\\pixel.frag", glslangArgs, spirvArgs);
+	}
 }
