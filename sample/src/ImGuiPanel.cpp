@@ -24,7 +24,7 @@ namespace FluidEngine {
 			ImGui::Checkbox("Another Window", &m_Show_Another_Window);
 
 			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-			ImGui::ColorEdit3("clear color", (float*)&m_Clear_Color); // Edit 3 floats representing a color
+			ImGui::ColorEdit3("clear color", (float*)&m_ClearColor); // Edit 3 floats representing a color
 
 			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
 				counter++;
@@ -36,17 +36,19 @@ namespace FluidEngine {
 		}
 		ImGui::Render();
 	}
-	void ImGuiPanel::ClearImguiFrame(GLFWwindow* window)
+	void ImGuiPanel::AssignImguiViewport(GLFWwindow* window)
 	{
 		int display_w, display_h;
 		glfwGetFramebufferSize(window, &display_w, &display_h);
 		glViewport(0, 0, display_w, display_h);
-		glClearColor(m_Clear_Color.x, m_Clear_Color.y, m_Clear_Color.z, m_Clear_Color.w);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		
+		glClearColor(m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, m_ClearColor.w);
 	}
+
+	void ImGuiPanel::DrawImgui() 
+	{
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
+
 	void ImGuiPanel::TerminateImgui()
 	{
 		ImGui_ImplOpenGL3_Shutdown();

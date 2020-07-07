@@ -1,14 +1,21 @@
 #include "Application.h"
 #include <functional>
 #include <iostream>
+
+#include "Renderer.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexArray.h"
+#include "ShaderControler.h"
+
 namespace FluidEngine
 {
-
 	void error_call_back(int error, const char* description)
 	{
 		Log::GetCoreLogger()->error("Error: {}", description);
 	}
-	int Application::Init(int minorVer, int majorVer)
+	
+	int Application::Init(int majorVer, int minorVer)
 	{
 
 		glfwSetErrorCallback(error_call_back);
@@ -42,121 +49,54 @@ namespace FluidEngine
 
 	void Application::MainLoop()
 	{
-		GLuint program, VAO, VBO, IBO;
-		ConfigureGL(&program, &VAO, &VBO, &IBO);
-		m_Imgui_Panel->InitiateImgui(m_Window->GetWindow());
-		while (!glfwWindowShouldClose(m_Window->GetWindow()))
 		{
-			m_Timer.Tick();
-			glfwSwapBuffers(m_Window->GetWindow());
-			glfwPollEvents();
-			//auto dt = m_Timer.DeltaTime();
-			//Log::GetCoreLogger()->info("delta time is {}", dt);
-			CalculateFrameStats();
-			glfwPollEvents();
-			m_Imgui_Panel->RenderImguiFrame();
-			DrawGL(program, VAO, VBO);
-			glfwSwapBuffers(m_Window->GetWindow());
-			m_Imgui_Panel->ClearImguiFrame(m_Window->GetWindow());
+			const float positions[] = {
+				0.5f, 0.5f, 0.0f, 1.0f,
+				0.5f, -0.5f, 0.0f, 1.0f,
+				-0.5f, -0.5f, 0.0f, 1.0f,
+				-0.5f, 0.5f, 0.0f, 1.0 };
+
+			unsigned int indices[] = {
+				0, 1, 3,
+				1, 2, 3 };
+
+			VertexArray va;
+			VertexBuffer vb(positions, sizeof(positions));
+			BufferLayout layout;
+			layout.Push<float>(4);
+			va.AddBuffer(layout, vb);		
+			IndexBuffer ib(indices, 6);
+			ShaderControler shaderControler;
+			shaderControler.AddShader({ "shader/vertex.vert", GL_VERTEX_SHADER, true});
+			shaderControler.AddShader({ "shader/pixel.frag", GL_FRAGMENT_SHADER, true});
+			shaderControler.CreateShaderProgram();
+			m_Imgui_Panel->InitiateImgui(m_Window->GetWindow());
+			shaderControler.UseShaderProgram();
+			while (!glfwWindowShouldClose(m_Window->GetWindow()))
+			{
+				m_Timer.Tick();
+				glfwPollEvents();
+				//auto dt = m_Timer.DeltaTime();
+				//Log::GetCoreLogger()->info("delta time is {}", dt);
+				CalculateFrameStats();
+				glfwPollEvents();
+				m_Imgui_Panel->RenderImguiFrame();
+				va.Bind();
+				ib.Bind();
+				glfwSwapBuffers(m_Window->GetWindow());
+				m_Imgui_Panel->AssignImguiViewport(m_Window->GetWindow());
+				glClear(GL_COLOR_BUFFER_BIT);
+				DrawGL();
+			}
+			m_Imgui_Panel->TerminateImgui();
 		}
-		m_Imgui_Panel->TerminateImgui();
 		Terminate();
 	}
 
-	void Application::ConfigureGL(GLuint* program, GLuint* VAO, GLuint* VBO, GLuint* IBO)
+	void Application::DrawGL()
 	{
-		const float positions[] = {
-			0.5f, 0.5f, 0.0f, 1.0f,
-			0.5f, -0.5f, 0.0f, 1.0f,
-			-0.5f, -0.5f, 0.0f, 1.0f,
-			-0.5f, 0.5f, 0.0f, 1.0 };
-		unsigned int indices[] = {
-			0, 1, 3,
-			1, 2, 3 };
-
-		glGenBuffers(1, VBO);
-		glGenBuffers(1, IBO);
-		glGenVertexArrays(1, VAO);
-
-		glBindVertexArray(*VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, *VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
-		glEnableVertexAttribArray(0);
-
-		*program = CompileProgram();
-	}
-
-	void Application::DrawGL(GLuint program, GLuint VAO, GLuint VBO)
-	{
-		glUseProgram(program);
-		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-	}
-
-	GLuint Application::LoadGlslShader(const char* filename, GLenum shaderType, bool checkErrors)
-	{
-		GLuint result = 0;
-		FILE* fp;
-		size_t filesize;
-		char* data;
-		fp = fopen(filename, "rb");
-		if (!fp)
-			return 0;
-		fseek(fp, 0, SEEK_END);
-		filesize = ftell(fp);
-		fseek(fp, 0, SEEK_SET);
-		data = new char[filesize + 1];
-		if (!data)
-			return 0;
-		fread(data, 1, filesize, fp);
-		data[filesize] = 0;
-		fclose(fp);
-		result = glCreateShader(shaderType);
-		if (!result)
-			return 0;
-		glShaderSource(result, 1, &data, NULL);
-		delete[] data;
-		glCompileShader(result);
-		if (checkErrors)
-		{
-			GLint status = 0;
-			glGetShaderiv(result, GL_COMPILE_STATUS, &status);
-			if (status == GL_FALSE)
-			{
-				GLint length;
-				glGetShaderiv(result, GL_INFO_LOG_LENGTH, &length);
-				char* message = (char*)alloca(length * sizeof(char));
-				glGetShaderInfoLog(result, length, &length, message);
-				std::cout << "failed to compile a shader !" << std::endl;
-				std::cout << message << std::endl;
-				glDeleteShader(result);
-				return 0;
-			}
-		}
-		return result;
-	}
-
-	GLuint Application::CompileProgram()
-	{
-		GLuint program;
-		GLuint vertexShader = LoadGlslShader("shader/vertex.vert", GL_VERTEX_SHADER, true);
-		GLuint fragmentShader = LoadGlslShader("shader/pixel.frag", GL_FRAGMENT_SHADER, true);
-		program = glCreateProgram();
-		glAttachShader(program, vertexShader);
-		glAttachShader(program, fragmentShader);
-		glLinkProgram(program);
-		glValidateProgram(program);
-
-		glDeleteShader(vertexShader);
-		glDeleteShader(fragmentShader);
-		return program;
+		m_Imgui_Panel->DrawImgui();
 	}
 
 	void Application::ConvAllHlslToGlsl()

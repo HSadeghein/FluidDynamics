@@ -12,12 +12,13 @@ namespace FluidEngine {
 		~ImGuiPanel() {}
 		void InitiateImgui(GLFWwindow* window);
 		void RenderImguiFrame();
-		void ClearImguiFrame(GLFWwindow* window);
+		void AssignImguiViewport(GLFWwindow* window);
+		void DrawImgui();
 		void TerminateImgui();
 	private:
 		const char* m_Glsl_Version = "#version 130";
 		bool m_Show_Demo_Window = true;
 		bool m_Show_Another_Window = false;
-		ImVec4 m_Clear_Color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+		ImVec4 m_ClearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	};
 }
