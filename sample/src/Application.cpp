@@ -10,11 +10,11 @@
 
 namespace FluidEngine
 {
-	void error_call_back(int error, const char* description)
+	void error_call_back(int error, const char *description)
 	{
 		Log::GetCoreLogger()->error("Error: {}", description);
 	}
-	
+
 	int Application::Init(int majorVer, int minorVer)
 	{
 
@@ -50,22 +50,22 @@ namespace FluidEngine
 				0.5f, 0.5f, 0.0f, 1.0f,
 				0.5f, -0.5f, 0.0f, 1.0f,
 				-0.5f, -0.5f, 0.0f, 1.0f,
-				-0.5f, 0.5f, 0.0f, 1.0 };
+				-0.5f, 0.5f, 0.0f, 1.0};
 
 			unsigned int indices[] = {
 				0, 1, 3,
-				1, 2, 3 };
+				1, 2, 3};
 
 			VertexArray va;
 			VertexBuffer vb(positions, sizeof(positions));
 			BufferLayout layout;
 			layout.Push<float>(4);
-			va.AddBuffer(layout, vb);		
+			va.AddBuffer(layout, vb);
 			IndexBuffer ib(indices, 6);
 			ShaderControler shaderControler;
 			shaderControler.ConvAllHlslToGlsl();
-			shaderControler.AddShader({ "shader/vertex.vert", GL_VERTEX_SHADER, true});
-			shaderControler.AddShader({ "shader/pixel.frag", GL_FRAGMENT_SHADER, true});
+			shaderControler.AddShader({"shader/vertex.vert", GL_VERTEX_SHADER, true});
+			shaderControler.AddShader({"shader/pixel.frag", GL_FRAGMENT_SHADER, true});
 			shaderControler.CreateShaderProgram();
 			shaderControler.UseShaderProgram();
 			ImGuiPanel panel;
@@ -94,4 +94,4 @@ namespace FluidEngine
 		m_Window->Terminate();
 		glfwTerminate();
 	}
-}
+} // namespace FluidEngine

@@ -6,4 +6,9 @@
 3.Run the build_glslang_spirv_tools.sh bash file.
 4.You can access to the glslangValidator.exe in {$SoloutionDir}/vendors/SPIRV-Cross/external/glslang-build/output/bin.
 5.Build the SPIRV-Cross with cmake.
+-----> mkdir build
+-----> cmake ..
+-----> cmake --build .
+
 6.You can access to the spirv-cross.exe in {$SoloutionDir}/vendors/SPIRV-Cross/build/Debug.
+7. At last shaders type must be set in VS ---> properties

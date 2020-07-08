@@ -102,3 +102,17 @@ project "sample"
 		"spirv-cross-reflectd",
 		"spirv-cross-utild"
 	}
+
+	filter { "files:**.hlsl" }
+	   flags "ExcludeFromBuild"
+	   shadermodel "5.0"
+
+	filter { "files:**-p.hlsl" }
+	   removeflags "ExcludeFromBuild"
+	   shadertype "Pixel"
+	   shaderentry "main"
+
+	filter { "files:**-v.hlsl" }
+	   removeflags "ExcludeFromBuild"
+	   shadertype "Vertex"
+	   shaderentry "main"
