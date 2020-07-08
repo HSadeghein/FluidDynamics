@@ -35,6 +35,8 @@ namespace FluidEngine {
 			return 0;
 		GL_CHECK_ERROR(glShaderSource(result, 1, &data, NULL));
 		delete[] data;
+		data = nullptr;
+
 		GL_CHECK_ERROR(glCompileShader(result));
 		if (shader.checkError)
 		{
