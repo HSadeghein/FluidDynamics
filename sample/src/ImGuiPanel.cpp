@@ -34,7 +34,7 @@ namespace FluidEngine {
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
 		}
-		ImGui::Render();
+		//ImGui::Render();
 	}
 	void ImGuiPanel::ClearImguiFrame(GLFWwindow* window)
 	{
@@ -43,7 +43,9 @@ namespace FluidEngine {
 		glViewport(0, 0, display_w, display_h);
 		glClearColor(m_Clear_Color.x, m_Clear_Color.y, m_Clear_Color.z, m_Clear_Color.w);
 		glClear(GL_COLOR_BUFFER_BIT);
+		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 	}
 	void ImGuiPanel::TerminateImgui()
 	{
