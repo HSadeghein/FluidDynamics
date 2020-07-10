@@ -1,10 +1,14 @@
-#include "Application.h"
-#include <functional>
-#include <iostream>
+#include "pch.h"
 
+#include "Application.h"
+#include "Renderer.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexArray.h"
+#include "ShaderControler.h"
 namespace FluidEngine
 {
-	void error_call_back(int error, const char *description)
+	void error_call_back(int error, const char* description)
 	{
 		Log::GetCoreLogger()->error("Error: {}", description);
 	}
@@ -39,31 +43,23 @@ namespace FluidEngine
 	void Application::MainLoop()
 	{
 		{
-			std::vector<float> vertices = {
-				// positions                 // texture coords
-				 0.5f,  0.5f, 0.0f, 1.0f,     1.0f, 1.0f,   // top right
-				 0.5f, -0.5f, 0.0f, 1.0f,     1.0f, 0.0f,   // bottom right
-				-0.5f, -0.5f, 0.0f, 1.0f,     0.0f, 0.0f,   // bottom left
-				-0.5f,  0.5f, 0.0f, 1.0f,     0.0f, 1.0f    // top left 
-			};
-
-			std::vector<unsigned int> indices = {
-				0, 1, 3,
-				1, 2, 3};
 
 			ImGuiPanel panel;
 			panel.InitiateImgui(m_Window->GetWindow());
 
-			m_Renderer = std::make_unique<Renderer>(vertices, indices);
+			auto meshData = m_GeomGenerator.CreateBox(1, 1, 1, 1);
+			m_Renderer = std::make_unique<Renderer>(meshData.Vertices, meshData.Indices);
 			//m_Renderer->SetColor("ColorBuffers", std::vector<float>{1, 0, 1, 1});
 			m_Renderer->SetTexture("res/image/tex2.png", "SPIRV_Cross_CombinedshaderTexturesampleType", 0);
+			m_Renderer->Blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			while (!glfwWindowShouldClose(m_Window->GetWindow()))
 			{
 				m_Renderer->Tick();
-				glfwPollEvents();
+
 				m_Renderer->CalculateFrameStats();
 				panel.RenderImguiFrame(m_Window->GetWindow());
 				glfwSwapBuffers(m_Window->GetWindow());
+				glfwPollEvents();
 				m_Renderer->Clear();
 				m_Renderer->Draw(panel);
 			}
@@ -74,7 +70,7 @@ namespace FluidEngine
 
 	void Application::Terminate()
 	{
-	    m_Renderer.reset();
+		m_Renderer.reset();
 		m_Window->Terminate();
 		glfwTerminate();
 	}

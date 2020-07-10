@@ -1,10 +1,10 @@
 #pragma once
-
+#include "pch.h"
 #include <gtest/gtest.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "Log.h"
-#include <iostream>
+
 #include "Application.h"
 
 

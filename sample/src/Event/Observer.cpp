@@ -1,5 +1,7 @@
+#include "../pch.h"
 #include "IObserver.h"
 #include "Subject.cpp"
+
 namespace FluidEngine
 {
 	class Observer : public IObserver

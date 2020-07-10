@@ -9,6 +9,7 @@
 #include "Texture.h"
 #include "ImguiPanel.h"
 #include "GameTimer.h"
+#include "GeometryGenerator.h"
 
 #define ASSERT(x) if(!(x)) __debugbreak();
 #define GL_CHECK_ERROR(x) GlClearErrors();\
@@ -21,7 +22,7 @@ bool GlDisplayError();
 namespace FluidEngine {
 	class Renderer {
 	public:
-		Renderer(const std::vector<float> vertices, const std::vector<unsigned int> indices);
+		Renderer(const std::vector<GeometryGenerator::Vertex> vertices, const std::vector<unsigned int> indices);
 		~Renderer();
 		void Draw(ImGuiPanel& panel) const;
 		void Clear() const;
@@ -29,6 +30,8 @@ namespace FluidEngine {
 		void CalculateFrameStats();
 		void SetColor(const std::string& blockName, std::vector<float> color);
 		void SetTexture(const char* path, const char* texName, int texSlot);
+		const std::vector<float> ConvertVerticesToArray(std::vector<GeometryGenerator::Vertex> vertices) const;
+		void Blend(unsigned int src, unsigned int dest);
 	protected:
 		GameTimer m_Timer;
 		std::unique_ptr<VertexBuffer> m_VertexBuffer;

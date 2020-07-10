@@ -1,15 +1,17 @@
-﻿#include "ImguiPanel.h"
+﻿#include "pch.h"
+
+#include "ImguiPanel.h"
 namespace FluidEngine
 {
 
-	void ImGuiPanel::InitiateImgui(GLFWwindow *window)
+	void ImGuiPanel::InitiateImgui(GLFWwindow* window)
 	{
 		ImGui::CreateContext();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init(m_Glsl_Version);
 		ImGui::StyleColorsDark();
 	}
-	void ImGuiPanel::RenderImguiFrame(GLFWwindow *window)
+	void ImGuiPanel::RenderImguiFrame(GLFWwindow* window)
 	{
 		int display_w, display_h;
 		ImGui_ImplOpenGL3_NewFrame();
@@ -26,7 +28,7 @@ namespace FluidEngine
 			ImGui::Checkbox("Another Window", &m_Show_Another_Window);
 
 			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);			  // Edit 1 float using a slider from 0.0f to 1.0f
-			ImGui::ColorEdit3("clear color", (float *)&m_ClearColor); // Edit 3 floats representing a color
+			ImGui::ColorEdit3("clear color", (float*)&m_ClearColor); // Edit 3 floats representing a color
 
 			if (ImGui::Button("Button")) // Buttons return true when clicked (most widgets return true when edited/activated)
 				counter++;

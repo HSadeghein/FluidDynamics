@@ -1,9 +1,9 @@
+#include "pch.h"
 #include "HlslToGlslConverter.h"
-#include <vector>
-#include <utility>
+
 
 namespace FluidEngine {
-	void HlslToGlslConverter::ConvertToSPVFrom(LPWSTR inputParams) 
+	void HlslToGlslConverter::ConvertToSPVFrom(LPWSTR inputParams)
 	{
 		STARTUPINFO info = { sizeof(info) };
 		PROCESS_INFORMATION processInfo;
@@ -16,7 +16,7 @@ namespace FluidEngine {
 		}
 	}
 
-	void HlslToGlslConverter::ConvertWithExeFromSPVTo(LPWSTR inputParams) 
+	void HlslToGlslConverter::ConvertWithExeFromSPVTo(LPWSTR inputParams)
 	{
 		STARTUPINFO info = { sizeof(info) };
 		PROCESS_INFORMATION processInfo;
