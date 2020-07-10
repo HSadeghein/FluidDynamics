@@ -1,13 +1,11 @@
-#include "Application.h"
-#include <functional>
-#include <iostream>
+#include "pch.h"
 
+#include "Application.h"
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "ShaderControler.h"
-
 namespace FluidEngine
 {
 	void error_call_back(int error, const char *description)
@@ -75,12 +73,12 @@ namespace FluidEngine
 			while (!glfwWindowShouldClose(m_Window->GetWindow()))
 			{
 				renderer.Tick();
-				glfwPollEvents();
 				//auto dt = m_Timer.DeltaTime();
 				//Log::GetCoreLogger()->info("delta time is {}", dt);
 				renderer.CalculateFrameStats();
 				panel.RenderImguiFrame(m_Window->GetWindow());
 				glfwSwapBuffers(m_Window->GetWindow());
+				glfwPollEvents();
 				renderer.Clear();
 				renderer.Draw(va, ib, panel);
 			}

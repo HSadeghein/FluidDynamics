@@ -16,6 +16,7 @@ IncludeDir["spirv_tool"] = "vendors/SPIRV-Cross/external/spirv-tools-build/outpu
 IncludeDir["spirv_cross"] = "vendors/SPIRV-Cross/include"
 IncludeDir["glfw"] = "vendors/glfw-3.3.2/include"
 IncludeDir["spdlog"] = "vendors/spdlog/include"
+IncludeDir["glm"] = "vendors/glm/"
 
 LibDir = {}
 LibDir["googletest"] = "googletest/googletest/build/lib/Debug"
@@ -42,6 +43,12 @@ project "sample"
 	targetdir("bin/" .. outputdir .. "/%{prj.name}")
 	objdir("bin-int/" .. outputdir .. "/%{prj.name}")
 
+
+
+	pchheader "pch.h"
+	pchsource "%{prj.name}/src/pch.cpp"
+
+
 	files
 	{
 		"%{prj.name}/src/**.h",
@@ -55,6 +62,8 @@ project "sample"
 		"%{prj.name}/shader/**.vert",
 		"%{prj.name}/shader/**.frag",
 		"%{prj.name}/shader/**.spv",
+		"%{prj.name}/vendors/glm/glm/**.hpp",
+		"%{prj.name}/vendors/glm/glm/**.inl",
 	}
 
 	includedirs
@@ -66,6 +75,7 @@ project "sample"
 		"%{IncludeDir.spirv_cross}",
 		"%{IncludeDir.glfw}",
 		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.glm}"
 	}
 	libdirs
 	{

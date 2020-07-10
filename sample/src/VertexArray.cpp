@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "VertexArray.h"
 #include "Renderer.h"
 
