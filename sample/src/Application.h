@@ -6,7 +6,7 @@
 #include "GameTimer.h"
 #include "Renderer.h"
 #include "ImguiPanel.h"
-
+#include "GeometryGenerator.h"
 namespace FluidEngine
 {
 
@@ -24,5 +24,7 @@ namespace FluidEngine
 		std::unique_ptr<Renderer> m_Renderer;
 		int m_GlfwMinorVersion = 0;
 		int m_GlfwMajorVersion = 4;
+
+		GeometryGenerator m_GeomGenerator;
 	};
 } // namespace FluidEngine

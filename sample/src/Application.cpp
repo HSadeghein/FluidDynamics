@@ -8,7 +8,7 @@
 #include "ShaderControler.h"
 namespace FluidEngine
 {
-	void error_call_back(int error, const char *description)
+	void error_call_back(int error, const char* description)
 	{
 		Log::GetCoreLogger()->error("Error: {}", description);
 	}
@@ -53,12 +53,13 @@ namespace FluidEngine
 
 			std::vector<unsigned int> indices = {
 				0, 1, 3,
-				1, 2, 3};
+				1, 2, 3 };
 
 			ImGuiPanel panel;
 			panel.InitiateImgui(m_Window->GetWindow());
 
-			m_Renderer = std::make_unique<Renderer>(vertices, indices);
+			auto meshData = m_GeomGenerator.CreateBox(1, 5, 1, 1);
+			m_Renderer = std::make_unique<Renderer>(meshData.Vertices, meshData.Indices);
 			//m_Renderer->SetColor("ColorBuffers", std::vector<float>{1, 0, 1, 1});
 			m_Renderer->SetTexture("res/image/tex1.jpg", "SPIRV_Cross_CombinedshaderTexturesampleType", 0);
 			while (!glfwWindowShouldClose(m_Window->GetWindow()))

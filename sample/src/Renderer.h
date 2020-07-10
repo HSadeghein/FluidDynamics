@@ -9,7 +9,7 @@
 #include "Texture.h"
 #include "ImguiPanel.h"
 #include "GameTimer.h"
-
+#include "GeometryGenerator.h"
 #define ASSERT(x) if(!(x)) __debugbreak();
 #define GL_CHECK_ERROR(x) GlClearErrors();\
 x;\
@@ -21,7 +21,7 @@ bool GlDisplayError();
 namespace FluidEngine {
 	class Renderer {
 	public:
-		Renderer(const std::vector<float> positions, const std::vector<unsigned int> indices);
+		Renderer(const std::vector<GeometryGenerator::Vertex> vertices, const std::vector<unsigned int> indices);
 		~Renderer();
 		void Draw(ImGuiPanel& panel) const;
 		void Clear() const;

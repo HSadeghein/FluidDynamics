@@ -23,7 +23,6 @@ namespace FluidEngine
 
 			ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
 
-
 			ImGui::Text("This is some useful text.");			 // Display some text (you can use a format strings too)
 			ImGui::Checkbox("Demo Window", &m_Show_Demo_Window); // Edit bools storing our window open/close state
 			ImGui::Checkbox("Another Window", &m_Show_Another_Window);

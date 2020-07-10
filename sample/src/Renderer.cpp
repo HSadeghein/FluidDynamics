@@ -18,21 +18,42 @@ bool GlDisplayError()
 	return true;
 }
 
-namespace FluidEngine {
-	Renderer::Renderer(const std::vector<float> verices, const std::vector<unsigned int> indices)
+namespace FluidEngine
+{
+	Renderer::Renderer(const std::vector<GeometryGenerator::Vertex> vertices, const std::vector<unsigned int> indices)
 	{
 		m_Timer.Reset();
-		
+		std::vector<float> v;
+		for (auto& x : vertices)
+		{
+			v.push_back(x.Position.x);
+			v.push_back(x.Position.y);
+			v.push_back(x.Position.z);
+			v.push_back(x.Normal.x);
+			v.push_back(x.Normal.y);
+			v.push_back(x.Normal.z);
+			v.push_back(x.Tangent.x);
+			v.push_back(x.Tangent.y);
+			v.push_back(x.Tangent.z);
+			v.push_back(x.UV.x);
+			v.push_back(x.UV.y);
+		}
 		/*GL_CHECK_ERROR(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 		GL_CHECK_ERROR(glEnable(GL_BLEND));*/
 		m_VertexArray = std::make_unique<VertexArray>();
-		m_VertexBuffer = std::make_unique<VertexBuffer>(&verices[0], verices.size() * sizeof(float));
+		m_VertexBuffer = std::make_unique<VertexBuffer>(&v[0], v.size() * sizeof(float));
 		// position attribute
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
+		//glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+		//glEnableVertexAttribArray(0);
 		// texture coord attribute
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(4 * sizeof(float)));
-		glEnableVertexAttribArray(1);
+		//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(4 * sizeof(float)));
+		//glEnableVertexAttribArray(1);
+		m_BufferLayout = std::make_unique<BufferLayout>();
+		m_BufferLayout->Push<float>(3);
+		m_BufferLayout->Push<float>(3);
+		m_BufferLayout->Push<float>(3);
+		m_BufferLayout->Push<float>(2);
+		m_VertexArray->AddBuffer(*m_BufferLayout, *m_VertexBuffer);
 		m_IndexBuffer = std::make_unique<IndexBuffer>(&indices[0], indices.size());
 		m_Shader = std::make_unique<ShaderControler>();
 		//m_Shader->ConvAllHlslToGlsl();
@@ -42,7 +63,7 @@ namespace FluidEngine {
 		m_Shader->UseShaderProgram();
 	}
 
-	Renderer::~Renderer() 
+	Renderer::~Renderer()
 	{
 		std::cout << "Renderer is destroyed" << std::endl;
 	}
@@ -61,7 +82,7 @@ namespace FluidEngine {
 
 	void Renderer::Draw(ImGuiPanel& panel) const
 	{
-		
+
 		m_VertexArray->Bind();
 		m_Texture->Bind();
 		m_IndexBuffer->Bind();

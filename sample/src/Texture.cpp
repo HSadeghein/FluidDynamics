@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Texture.h" 
 #include "stb_image/Stb_Image.h"
 #include "Renderer.h"
@@ -15,11 +16,11 @@ namespace FluidEngine
 		GL_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 		GL_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
-		//stbi_set_flip_vertically_on_load(1);
-		m_LocalBuffer = stbi_load("res/image/tex1.jpg", &m_Width, &m_Height, &m_BPP, 0);
+		stbi_set_flip_vertically_on_load(1);
+		m_LocalBuffer = stbi_load("res/image/tex1.jpg", &m_Width, &m_Height, &m_BPP, 4);
 		if (stbi_failure_reason())
 			std::cout << stbi_failure_reason();
-		GL_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_LocalBuffer));
+		GL_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_LocalBuffer));
 		glGenerateMipmap(GL_TEXTURE_2D);
 		GL_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
 		if (m_LocalBuffer)
