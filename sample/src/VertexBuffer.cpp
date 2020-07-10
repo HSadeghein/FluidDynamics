@@ -1,8 +1,9 @@
 #include "VertexBuffer.h"
 #include "Renderer.h"
+#include<iostream>
 
 namespace FluidEngine {
-	VertexBuffer::VertexBuffer(const void* data, int size) 
+	VertexBuffer::VertexBuffer(const float* data, int size) 
 	{
 		GL_CHECK_ERROR(glGenBuffers(1, &m_RenderID));
 		GL_CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, m_RenderID));
@@ -11,6 +12,7 @@ namespace FluidEngine {
 
 	VertexBuffer::~VertexBuffer()
 	{
+		std::cout << "Vertex buffer is destroyed" << std::endl;
 		GL_CHECK_ERROR(glDeleteBuffers(1, &m_RenderID));
 	}
 

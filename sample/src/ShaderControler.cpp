@@ -1,4 +1,6 @@
 #include "ShaderControler.h"
+#include "Renderer.h" 
+#include<iostream>
 
 namespace FluidEngine {
 
@@ -10,6 +12,7 @@ namespace FluidEngine {
 	ShaderControler::~ShaderControler()
 	{
 		GL_CHECK_ERROR(glDeleteProgram(m_RenderID));
+		std::cout << "Shader Controller is destroyed" << std::endl;
 	}
 
 	unsigned int ShaderControler::LoadCompileShader(Shader shader)
@@ -103,5 +106,20 @@ namespace FluidEngine {
 		spirvArgs[0] = L"spirv-cross.exe --version 330 --no-es ";
 		spirvArgs[1] = L" --output ";
 		ConvHlslToGlsl(L"shader\\PixelShader-p.hlsl", L"shader\\pixel.spv", L"shader\\pixel.frag", glslangArgs, spirvArgs);
+	}
+
+	void ShaderControler::SetUniformBlockBindingFloat(const char* blockName, std::vector<float> data)
+	{
+		GL_CHECK_ERROR(unsigned int blockIndex = glGetUniformBlockIndex(m_RenderID, blockName));
+		ASSERT(blockIndex != GL_INVALID_INDEX);
+		GL_CHECK_ERROR(glUniformBlockBinding(m_RenderID, blockIndex, 0));
+		m_UniformBuffer = std::make_unique<UniformBuffer>(&data[0], sizeof(float) * data.size());
+	}
+
+	void ShaderControler::SetUniformInt(const char* name, int value)
+	{
+		GL_CHECK_ERROR(int location = glGetUniformLocation(m_RenderID, name));
+		ASSERT(location != GL_INVALID_INDEX);
+		GL_CHECK_ERROR(glUniform1i(location, value));
 	}
 }

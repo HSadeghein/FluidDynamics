@@ -1,5 +1,6 @@
 #include "IndexBuffer.h"
 #include "Renderer.h"
+#include<iostream>
 
 namespace FluidEngine {
 	IndexBuffer::IndexBuffer(const unsigned int* data, int count) : m_Count(count)
@@ -12,6 +13,7 @@ namespace FluidEngine {
 	IndexBuffer::~IndexBuffer()
 	{
 		GL_CHECK_ERROR(glDeleteBuffers(1, &m_RenderID));
+		std::cout << "Index buffer is destroyed" << std::endl;
 	}
 
 	void IndexBuffer::Bind()

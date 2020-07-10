@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include<glad/glad.h>
+#include<iostream>
 
 namespace FluidEngine {
 
@@ -13,6 +14,7 @@ namespace FluidEngine {
     class BufferLayout {
     public:
         BufferLayout() : m_Stride(0) {}
+        ~BufferLayout() { std::cout << "Renderer is destroyed" << std::endl; }
 
         template<typename T>
         void Push(unsigned int count)

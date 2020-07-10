@@ -1,4 +1,6 @@
 #include "Renderer.h"
+#include <vector>
+#include "Texture.h"
 
 void GlClearErrors()
 {
@@ -16,16 +18,53 @@ bool GlDisplayError()
 }
 
 namespace FluidEngine {
-	Renderer::Renderer()
+	Renderer::Renderer(const std::vector<float> verices, const std::vector<unsigned int> indices)
 	{
 		m_Timer.Reset();
+		
+		/*GL_CHECK_ERROR(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+		GL_CHECK_ERROR(glEnable(GL_BLEND));*/
+		m_VertexArray = std::make_unique<VertexArray>();
+		m_VertexBuffer = std::make_unique<VertexBuffer>(&verices[0], verices.size() * sizeof(float));
+		// position attribute
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		// texture coord attribute
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(4 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+		m_IndexBuffer = std::make_unique<IndexBuffer>(&indices[0], indices.size());
+		m_Shader = std::make_unique<ShaderControler>();
+		//m_Shader->ConvAllHlslToGlsl();
+		m_Shader->AddShader({ "shader/vertex.vert", GL_VERTEX_SHADER, true });
+		m_Shader->AddShader({ "shader/pixel.frag", GL_FRAGMENT_SHADER, true });
+		m_Shader->CreateShaderProgram();
+		m_Shader->UseShaderProgram();
 	}
 
-	void Renderer::Draw(VertexArray& va, IndexBuffer& ib, ImGuiPanel& panel) const
+	Renderer::~Renderer() 
 	{
-		va.Bind();
-		ib.Bind();
-		GL_CHECK_ERROR(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, 0));
+		std::cout << "Renderer is destroyed" << std::endl;
+	}
+
+	void Renderer::SetColor(const std::string& blockName, std::vector<float> color)
+	{
+		m_Shader->SetUniformBlockBindingFloat(blockName.c_str(), color);
+	}
+
+	void Renderer::SetTexture(const char* path, const char* texName, int texSlot)
+	{
+		m_Texture = std::make_unique<Texture>(path);
+		m_Texture->Bind(texSlot);
+		//m_Shader->SetUniformInt(texName, texSlot);
+	}
+
+	void Renderer::Draw(ImGuiPanel& panel) const
+	{
+		
+		m_VertexArray->Bind();
+		m_Texture->Bind();
+		m_IndexBuffer->Bind();
+		GL_CHECK_ERROR(glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, 0));
 		panel.DrawImgui();
 	}
 
