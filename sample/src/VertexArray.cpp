@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "VertexArray.h"
 #include "Renderer.h"
+#include<iostream>
 
 namespace FluidEngine {
 	VertexArray::VertexArray()
@@ -12,6 +13,7 @@ namespace FluidEngine {
 	VertexArray::~VertexArray()
 	{
 		GL_CHECK_ERROR(glDeleteVertexArrays(1, &m_RenderID));
+		std::cout << "Vertex Array is destroyed" << std::endl;
 	}
 
 	void VertexArray::Bind()

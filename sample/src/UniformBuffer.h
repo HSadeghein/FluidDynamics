@@ -1,10 +1,10 @@
 #pragma once
-
 namespace FluidEngine {
-	class VertexBuffer {
+	class UniformBuffer {
 	public:
-		VertexBuffer(const float* data, int size);
-		~VertexBuffer();
+		UniformBuffer(const void* data, int size);
+		~UniformBuffer();
+
 		void Bind();
 		void Unbind();
 	private:

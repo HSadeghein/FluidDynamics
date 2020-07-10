@@ -15,13 +15,12 @@ namespace FluidEngine
 
 	int Application::Init(int majorVer, int minorVer)
 	{
-
 		glfwSetErrorCallback(error_call_back);
 		glfwInit();
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, majorVer);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minorVer);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		WindowProps props(600, 800, "Hassan");
+		WindowProps props(800, 600, "Cumrun");
 		m_Window = std::make_unique<Window>(props);
 		//std bind --> bind a function or a member to a another function
 		//in this line we binded applicaion::onevent function, the first aurgument indicates the concept of the function, second argument indicates which function exactly we want to use
@@ -44,43 +43,34 @@ namespace FluidEngine
 	void Application::MainLoop()
 	{
 		{
-			const float positions[] = {
-				0.5f, 0.5f, 0.0f, 1.0f,
-				0.5f, -0.5f, 0.0f, 1.0f,
-				-0.5f, -0.5f, 0.0f, 1.0f,
-				-0.5f, 0.5f, 0.0f, 1.0};
+			std::vector<float> vertices = {
+				// positions                 // texture coords
+				0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f,	  // top right
+				0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,  // bottom right
+				-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
+				-0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f	  // top left
+			};
 
-			unsigned int indices[] = {
+			std::vector<unsigned int> indices = {
 				0, 1, 3,
 				1, 2, 3};
 
-			VertexArray va;
-			VertexBuffer vb(positions, sizeof(positions));
-			BufferLayout layout;
-			layout.Push<float>(4);
-			va.AddBuffer(layout, vb);
-			IndexBuffer ib(indices, 6);
-			ShaderControler shaderControler;
-			shaderControler.ConvAllHlslToGlsl();
-			shaderControler.AddShader({"shader/vertex.vert", GL_VERTEX_SHADER, true});
-			shaderControler.AddShader({"shader/pixel.frag", GL_FRAGMENT_SHADER, true});
-			shaderControler.CreateShaderProgram();
-			shaderControler.UseShaderProgram();
 			ImGuiPanel panel;
 			panel.InitiateImgui(m_Window->GetWindow());
-			Renderer renderer;
 
+			m_Renderer = std::make_unique<Renderer>(vertices, indices);
+			//m_Renderer->SetColor("ColorBuffers", std::vector<float>{1, 0, 1, 1});
+			m_Renderer->SetTexture("res/image/tex1.jpg", "SPIRV_Cross_CombinedshaderTexturesampleType", 0);
 			while (!glfwWindowShouldClose(m_Window->GetWindow()))
 			{
-				renderer.Tick();
-				//auto dt = m_Timer.DeltaTime();
-				//Log::GetCoreLogger()->info("delta time is {}", dt);
-				renderer.CalculateFrameStats();
+				m_Renderer->Tick();
+
+				m_Renderer->CalculateFrameStats();
 				panel.RenderImguiFrame(m_Window->GetWindow());
 				glfwSwapBuffers(m_Window->GetWindow());
 				glfwPollEvents();
-				renderer.Clear();
-				renderer.Draw(va, ib, panel);
+				m_Renderer->Clear();
+				m_Renderer->Draw(panel);
 			}
 			panel.TerminateImgui();
 		}
@@ -89,6 +79,7 @@ namespace FluidEngine
 
 	void Application::Terminate()
 	{
+		m_Renderer.reset();
 		m_Window->Terminate();
 		glfwTerminate();
 	}
