@@ -26,12 +26,10 @@ namespace FluidEngine {
 		GL_CHECK_ERROR(glEnable(GL_BLEND));*/
 		m_VertexArray = std::make_unique<VertexArray>();
 		m_VertexBuffer = std::make_unique<VertexBuffer>(&verices[0], verices.size() * sizeof(float));
-		// position attribute
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-		// texture coord attribute
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(4 * sizeof(float)));
-		glEnableVertexAttribArray(1);
+		m_BufferLayout = std::make_unique<BufferLayout>();
+		m_BufferLayout->Push<float>(4);
+		m_BufferLayout->Push<float>(2);
+		m_VertexArray->AddBuffer(*m_BufferLayout, *m_VertexBuffer);
 		m_IndexBuffer = std::make_unique<IndexBuffer>(&indices[0], indices.size());
 		m_Shader = std::make_unique<ShaderControler>();
 		//m_Shader->ConvAllHlslToGlsl();

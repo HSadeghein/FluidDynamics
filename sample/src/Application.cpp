@@ -2,8 +2,6 @@
 #include <functional>
 #include <iostream>
 
-
-
 namespace FluidEngine
 {
 	void error_call_back(int error, const char *description)
@@ -58,7 +56,7 @@ namespace FluidEngine
 
 			m_Renderer = std::make_unique<Renderer>(vertices, indices);
 			//m_Renderer->SetColor("ColorBuffers", std::vector<float>{1, 0, 1, 1});
-			m_Renderer->SetTexture("res/image/tex1.jpg", "SPIRV_Cross_CombinedshaderTexturesampleType", 0);
+			m_Renderer->SetTexture("res/image/tex2.png", "SPIRV_Cross_CombinedshaderTexturesampleType", 0);
 			while (!glfwWindowShouldClose(m_Window->GetWindow()))
 			{
 				m_Renderer->Tick();

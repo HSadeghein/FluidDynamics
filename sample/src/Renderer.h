@@ -21,7 +21,7 @@ bool GlDisplayError();
 namespace FluidEngine {
 	class Renderer {
 	public:
-		Renderer(const std::vector<float> positions, const std::vector<unsigned int> indices);
+		Renderer(const std::vector<float> vertices, const std::vector<unsigned int> indices);
 		~Renderer();
 		void Draw(ImGuiPanel& panel) const;
 		void Clear() const;

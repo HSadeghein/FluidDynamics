@@ -103,7 +103,7 @@ namespace FluidEngine {
 		ConvHlslToGlsl(L"shader\\VertexShader-v.hlsl", L"shader\\vertex.spv", L"shader\\vertex.vert", glslangArgs, spirvArgs);
 		glslangArgs[0] = L"glslangValidator.exe -S frag -e main -o ";
 		glslangArgs[1] = L" -V -D ";
-		spirvArgs[0] = L"spirv-cross.exe --version 330 --no-es ";
+		spirvArgs[0] = L"spirv-cross.exe --version 450 --no-es ";
 		spirvArgs[1] = L" --output ";
 		ConvHlslToGlsl(L"shader\\PixelShader-p.hlsl", L"shader\\pixel.spv", L"shader\\pixel.frag", glslangArgs, spirvArgs);
 	}
