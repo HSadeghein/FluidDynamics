@@ -5,7 +5,7 @@ namespace FluidEngine
 {
 	class Texture {
 	public:
-		Texture(const std::string& filePath);
+		Texture(const std::string& filePath, bool invert);
 		~Texture();
 		void Bind(unsigned int slot = 0) const;
 		void Unbind(unsigned int slot = 0) const;

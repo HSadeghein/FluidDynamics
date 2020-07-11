@@ -4,6 +4,8 @@
 #include "HlslToGlslConverter.h"
 #include <iostream>
 #include "UniformBuffer.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 namespace FluidEngine {
 
@@ -21,8 +23,10 @@ namespace FluidEngine {
 		void CreateShaderProgram();
 		void UseShaderProgram();
 		void ConvAllHlslToGlsl();
-		void SetUniformBlockBindingFloat(const char* blockName, std::vector<float> data);
+		void SetUniformBlockBindingFloat(const char* blockName, std::vector<float> data, unsigned int binding);
+		void SetUniformBlockBindingMat4(const char* blockName, glm::mat4 data, unsigned int binding);
 		void SetUniformInt(const char* name, int value);
+		void SetUniformMat4(const char* name, glm::mat4 value);
 	private:
 		unsigned int LoadCompileShader(Shader shader);
 		void ConvHlslToGlsl(LPCWSTR sourceName, LPCWSTR targetSPVName, LPCWSTR targetName, LPCWSTR glslangArgs[2],

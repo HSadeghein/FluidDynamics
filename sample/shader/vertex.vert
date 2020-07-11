@@ -19,9 +19,7 @@ struct FragmentInput
 
 layout(binding = 0, std140) uniform MatrixBuffer
 {
-    layout(row_major) mat4 worldMatrix;
-    layout(row_major) mat4 viewMatrix;
-    layout(row_major) mat4 projectionMatrix;
+    layout(row_major) mat4 mvp;
 } _71;
 
 layout(location = 0) in vec3 input_position;
@@ -33,7 +31,7 @@ out vec2 _entryPointOutput_uv;
 FragmentInput _main(VertexInput _input)
 {
     FragmentInput _output;
-    _output.position = vec4(_input.position, 1.0);
+    _output.position = vec4(_input.position, 1.0) * _71.mvp;
     _output.uv = _input.uv;
     return _output;
 }

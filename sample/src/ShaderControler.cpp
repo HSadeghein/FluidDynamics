@@ -7,7 +7,7 @@ namespace FluidEngine {
 
 	ShaderControler::ShaderControler()
 	{
-
+		m_UniformBuffer = std::make_unique<UniformBuffer>();
 	}
 
 	ShaderControler::~ShaderControler()
@@ -109,12 +109,20 @@ namespace FluidEngine {
 		ConvHlslToGlsl(L"shader\\PixelShader-p.hlsl", L"shader\\pixel.spv", L"shader\\pixel.frag", glslangArgs, spirvArgs);
 	}
 
-	void ShaderControler::SetUniformBlockBindingFloat(const char* blockName, std::vector<float> data)
+	void ShaderControler::SetUniformBlockBindingFloat(const char* blockName, std::vector<float> data, unsigned int binding)
 	{
 		GL_CHECK_ERROR(unsigned int blockIndex = glGetUniformBlockIndex(m_RenderID, blockName));
 		ASSERT(blockIndex != GL_INVALID_INDEX);
-		GL_CHECK_ERROR(glUniformBlockBinding(m_RenderID, blockIndex, 0));
-		m_UniformBuffer = std::make_unique<UniformBuffer>(&data[0], sizeof(float) * data.size());
+		GL_CHECK_ERROR(glUniformBlockBinding(m_RenderID, blockIndex, binding));
+		m_UniformBuffer->Bind(&data[0], sizeof(float) * data.size(), binding);
+	}
+
+	void ShaderControler::SetUniformBlockBindingMat4(const char* blockName, glm::mat4 data, unsigned int binding)
+	{
+		GL_CHECK_ERROR(unsigned int blockIndex = glGetUniformBlockIndex(m_RenderID, blockName));
+		ASSERT(blockIndex != GL_INVALID_INDEX);
+		GL_CHECK_ERROR(glUniformBlockBinding(m_RenderID, blockIndex, binding));
+		m_UniformBuffer->Bind(&data[0][0], sizeof(glm::mat4), binding);
 	}
 
 	void ShaderControler::SetUniformInt(const char* name, int value)
@@ -122,5 +130,12 @@ namespace FluidEngine {
 		GL_CHECK_ERROR(int location = glGetUniformLocation(m_RenderID, name));
 		ASSERT(location != GL_INVALID_INDEX);
 		GL_CHECK_ERROR(glUniform1i(location, value));
+	}
+
+	void ShaderControler::SetUniformMat4(const char* name, glm::mat4 value)
+	{
+		GL_CHECK_ERROR(int location = glGetUniformLocation(m_RenderID, name));
+		ASSERT(location != GL_INVALID_INDEX);
+		GL_CHECK_ERROR(glUniformMatrix4fv(location, 1, false, &value[0][0]));
 	}
 }

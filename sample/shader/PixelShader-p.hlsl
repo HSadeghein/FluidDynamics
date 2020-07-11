@@ -14,5 +14,5 @@ struct FragmentInput {
 float4 main(FragmentInput input) : SV_TARGET
 {
 	float4 texColor = shaderTexture.Sample(sampleType, input.uv);
-	return texColor;
+	return texColor * color;
 }

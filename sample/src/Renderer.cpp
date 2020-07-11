@@ -3,6 +3,8 @@
 #include <vector>
 #include "Texture.h"
 
+
+
 void GlClearErrors()
 {
 	while (glGetError() != GL_NO_ERROR);
@@ -24,7 +26,6 @@ namespace FluidEngine
 	{
 		m_Timer.Reset();
 		const std::vector<float> verticesArray = ConvertVerticesToArray(vertices);
-		
 		m_VertexArray = std::make_unique<VertexArray>();
 		m_VertexBuffer = std::make_unique<VertexBuffer>(&verticesArray[0], verticesArray.size() * sizeof(float));
 		m_BufferLayout = std::make_unique<BufferLayout>();
@@ -34,6 +35,7 @@ namespace FluidEngine
 		m_BufferLayout->Push<float>(2);
 		m_VertexArray->AddBuffer(*m_BufferLayout, *m_VertexBuffer);
 		m_IndexBuffer = std::make_unique<IndexBuffer>(&indices[0], indices.size());
+		
 		m_Shader = std::make_unique<ShaderControler>();
 		//m_Shader->ConvAllHlslToGlsl();
 		m_Shader->AddShader({ "shader/vertex.vert", GL_VERTEX_SHADER, true });
@@ -67,21 +69,41 @@ namespace FluidEngine
 		return v;
 	}
 
-	void Renderer::SetColor(const std::string& blockName, std::vector<float> color)
+	void Renderer::OrthogonalProjection(const float& left, const float& right, const float& bottom, const float& top, const float& nearZ, const float& farZ)
 	{
-		m_Shader->SetUniformBlockBindingFloat(blockName.c_str(), color);
+		projection = glm::ortho(left, right, bottom, top);
 	}
 
-	void Renderer::SetTexture(const char* path, const char* texName, int texSlot)
+	void Renderer::Model(const glm::vec3 translation)
 	{
-		m_Texture = std::make_unique<Texture>(path);
+		model = glm::translate(glm::mat4(1.0f), translation);
+	}
+
+	void Renderer::View(const glm::vec3 translation)
+	{
+		view = glm::translate(glm::mat4(1.0f), translation);
+	}
+
+	void Renderer::MVP(const std::string& blockName)
+	{
+		glm::mat4 mvp = projection * view * model;
+		m_Shader->SetUniformBlockBindingMat4(&blockName[0], mvp, 0);
+	}
+
+	void Renderer::SetColor(const std::string& blockName, std::vector<float> color)
+	{
+		m_Shader->SetUniformBlockBindingFloat(blockName.c_str(), color, 1);
+	}
+
+	void Renderer::SetTexture(const char* path, const char* texName, int texSlot, bool invert)
+	{
+		m_Texture = std::make_unique<Texture>(path, invert);
 		m_Texture->Bind(texSlot);
-		//m_Shader->SetUniformInt(texName, texSlot);
+		m_Shader->SetUniformInt(texName, texSlot);
 	}
 
 	void Renderer::Draw(ImGuiPanel& panel) const
 	{
-
 		m_VertexArray->Bind();
 		m_Texture->Bind();
 		m_IndexBuffer->Bind();
