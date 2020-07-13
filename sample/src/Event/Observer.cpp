@@ -1,4 +1,4 @@
-#include "../pch.h"
+#include "pch.h"
 #include "IObserver.h"
 #include "Subject.cpp"
 
