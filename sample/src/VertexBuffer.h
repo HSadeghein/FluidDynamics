@@ -1,4 +1,5 @@
 #pragma once
+#include "GeometryGenerator.h"
 
 namespace FluidEngine {
 	class VertexBuffer {

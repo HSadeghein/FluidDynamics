@@ -43,29 +43,25 @@ namespace FluidEngine
 	void Application::MainLoop()
 	{
 		{
-			std::vector<float> vertices = {
-				// positions                 // texture coords
-				0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f,	  // top right
-				0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,  // bottom right
-				-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
-				-0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f	  // top left
-			};
-
-			std::vector<unsigned int> indices = {
-				0, 1, 3,
-				1, 2, 3 };
 
 			ImGuiPanel panel;
 			panel.InitiateImgui(m_Window->GetWindow());
-
-			auto meshData = m_GeomGenerator.CreateBox(1, 5, 1, 1);
+			int height = m_Window->GetHeight();
+			int width = m_Window->GetWidth();
+			auto meshData = m_GeomGenerator.CreateBox(100, 100, 0, 1);
 			m_Renderer = std::make_unique<Renderer>(meshData.Vertices, meshData.Indices);
-			//m_Renderer->SetColor("ColorBuffers", std::vector<float>{1, 0, 1, 1});
-			m_Renderer->SetTexture("res/image/tex1.jpg", "SPIRV_Cross_CombinedshaderTexturesampleType", 0);
+			m_Renderer->OrthogonalProjection(-width / 2, width / 2, -height / 2, height / 2, -1 , 1);
+			m_Renderer->Model(glm::vec3(100, 0, 0));
+			m_Renderer->View(glm::vec3(100, 200, 0));
+			m_Renderer->MVP("MatrixBuffer");
+
+			m_Renderer->SetColor("ColorBuffers", std::vector<float>{0, 1, 1, 1});
+			m_Renderer->SetTexture("res/image/dog.png", "SPIRV_Cross_CombinedshaderTexturesampleType", 0, false);
+			m_Renderer->Blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			
 			while (!glfwWindowShouldClose(m_Window->GetWindow()))
 			{
 				m_Renderer->Tick();
-
 				m_Renderer->CalculateFrameStats();
 				panel.RenderImguiFrame(m_Window->GetWindow());
 				glfwSwapBuffers(m_Window->GetWindow());

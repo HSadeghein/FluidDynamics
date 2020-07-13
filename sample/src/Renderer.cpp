@@ -3,6 +3,8 @@
 #include <vector>
 #include "Texture.h"
 
+
+
 void GlClearErrors()
 {
 	while (glGetError() != GL_NO_ERROR);
@@ -23,6 +25,32 @@ namespace FluidEngine
 	Renderer::Renderer(const std::vector<GeometryGenerator::Vertex> vertices, const std::vector<unsigned int> indices)
 	{
 		m_Timer.Reset();
+		const std::vector<float> verticesArray = ConvertVerticesToArray(vertices);
+		m_VertexArray = std::make_unique<VertexArray>();
+		m_VertexBuffer = std::make_unique<VertexBuffer>(&verticesArray[0], verticesArray.size() * sizeof(float));
+		m_BufferLayout = std::make_unique<BufferLayout>();
+		m_BufferLayout->Push<float>(3);
+		m_BufferLayout->Push<float>(3);
+		m_BufferLayout->Push<float>(3);
+		m_BufferLayout->Push<float>(2);
+		m_VertexArray->AddBuffer(*m_BufferLayout, *m_VertexBuffer);
+		m_IndexBuffer = std::make_unique<IndexBuffer>(&indices[0], indices.size());
+		
+		m_Shader = std::make_unique<ShaderControler>();
+		//m_Shader->ConvAllHlslToGlsl();
+		m_Shader->AddShader({ "shader/vertex.vert", GL_VERTEX_SHADER, true });
+		m_Shader->AddShader({ "shader/pixel.frag", GL_FRAGMENT_SHADER, true });
+		m_Shader->CreateShaderProgram();
+		m_Shader->UseShaderProgram();
+	}
+
+	Renderer::~Renderer()
+	{
+		std::cout << "Renderer is destroyed" << std::endl;
+	}
+
+	const std::vector<float> Renderer::ConvertVerticesToArray(std::vector<GeometryGenerator::Vertex> vertices) const
+	{
 		std::vector<float> v;
 		for (auto& x : vertices)
 		{
@@ -38,51 +66,44 @@ namespace FluidEngine
 			v.push_back(x.UV.x);
 			v.push_back(x.UV.y);
 		}
-		/*GL_CHECK_ERROR(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-		GL_CHECK_ERROR(glEnable(GL_BLEND));*/
-		m_VertexArray = std::make_unique<VertexArray>();
-		m_VertexBuffer = std::make_unique<VertexBuffer>(&v[0], v.size() * sizeof(float));
-		// position attribute
-		//glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-		//glEnableVertexAttribArray(0);
-		// texture coord attribute
-		//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(4 * sizeof(float)));
-		//glEnableVertexAttribArray(1);
-		m_BufferLayout = std::make_unique<BufferLayout>();
-		m_BufferLayout->Push<float>(3);
-		m_BufferLayout->Push<float>(3);
-		m_BufferLayout->Push<float>(3);
-		m_BufferLayout->Push<float>(2);
-		m_VertexArray->AddBuffer(*m_BufferLayout, *m_VertexBuffer);
-		m_IndexBuffer = std::make_unique<IndexBuffer>(&indices[0], indices.size());
-		m_Shader = std::make_unique<ShaderControler>();
-		//m_Shader->ConvAllHlslToGlsl();
-		m_Shader->AddShader({ "shader/vertex.vert", GL_VERTEX_SHADER, true });
-		m_Shader->AddShader({ "shader/pixel.frag", GL_FRAGMENT_SHADER, true });
-		m_Shader->CreateShaderProgram();
-		m_Shader->UseShaderProgram();
+		return v;
 	}
 
-	Renderer::~Renderer()
+	void Renderer::OrthogonalProjection(const float& left, const float& right, const float& bottom, const float& top, const float& nearZ, const float& farZ)
 	{
-		std::cout << "Renderer is destroyed" << std::endl;
+		projection = glm::ortho(left, right, bottom, top);
+	}
+
+	void Renderer::Model(const glm::vec3 translation)
+	{
+		model = glm::translate(glm::mat4(1.0f), translation);
+	}
+
+	void Renderer::View(const glm::vec3 translation)
+	{
+		view = glm::translate(glm::mat4(1.0f), translation);
+	}
+
+	void Renderer::MVP(const std::string& blockName)
+	{
+		glm::mat4 mvp = projection * view * model;
+		m_Shader->SetUniformBlockBindingMat4(&blockName[0], mvp, 0);
 	}
 
 	void Renderer::SetColor(const std::string& blockName, std::vector<float> color)
 	{
-		m_Shader->SetUniformBlockBindingFloat(blockName.c_str(), color);
+		m_Shader->SetUniformBlockBindingFloat(blockName.c_str(), color, 1);
 	}
 
-	void Renderer::SetTexture(const char* path, const char* texName, int texSlot)
+	void Renderer::SetTexture(const char* path, const char* texName, int texSlot, bool invert)
 	{
-		m_Texture = std::make_unique<Texture>(path);
+		m_Texture = std::make_unique<Texture>(path, invert);
 		m_Texture->Bind(texSlot);
-		//m_Shader->SetUniformInt(texName, texSlot);
+		m_Shader->SetUniformInt(texName, texSlot);
 	}
 
 	void Renderer::Draw(ImGuiPanel& panel) const
 	{
-
 		m_VertexArray->Bind();
 		m_Texture->Bind();
 		m_IndexBuffer->Bind();
@@ -118,5 +139,10 @@ namespace FluidEngine
 			frameCount = 0;
 			timeElapsed += 1.0f;
 		}
+	}
+
+	void Renderer::Blend(unsigned int src, unsigned int dest) {
+		GL_CHECK_ERROR(glBlendFunc(src, dest));
+		GL_CHECK_ERROR(glEnable(GL_BLEND));
 	}
 }

@@ -1,3 +1,4 @@
+#include "../pch.h"
 // dear imgui, v1.76
 // (demo code)
 
@@ -4904,6 +4905,7 @@ void ShowExampleAppDocuments(bool* p_open)
     ImGui::End();
 }
 
+#include "../pch.h"
 // End of Demo code
 #else
 

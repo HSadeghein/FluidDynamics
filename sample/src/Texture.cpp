@@ -5,7 +5,7 @@
 
 namespace FluidEngine 
 {
-	Texture::Texture(const std::string& filePath) : 
+	Texture::Texture(const std::string& filePath, bool invert) : 
 		m_RenderID(0), m_FilePath(filePath), m_Width(0), m_Height(0), m_LocalBuffer(nullptr), m_BPP(0)
 	{
 		GL_CHECK_ERROR(glGenTextures(1, &m_RenderID));
@@ -16,8 +16,8 @@ namespace FluidEngine
 		GL_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 		GL_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
-		stbi_set_flip_vertically_on_load(1);
-		m_LocalBuffer = stbi_load("res/image/tex1.jpg", &m_Width, &m_Height, &m_BPP, 4);
+		stbi_set_flip_vertically_on_load(invert);
+		m_LocalBuffer = stbi_load(filePath.c_str(), &m_Width, &m_Height, &m_BPP, 4);
 		if (stbi_failure_reason())
 			std::cout << stbi_failure_reason();
 		GL_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_LocalBuffer));
