@@ -5,6 +5,8 @@
 namespace FluidEngine {
 	UniformBuffer::UniformBuffer() : m_RenderID(0)
 	{
+		GL_CHECK_ERROR(glGenBuffers(1, &m_RenderID));
+		GL_CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, m_RenderID));
 	}
 
 	UniformBuffer::~UniformBuffer() 

@@ -22,8 +22,9 @@ bool GlDisplayError()
 
 namespace FluidEngine
 {
-	Renderer::Renderer(const std::vector<GeometryGenerator::Vertex> vertices, const std::vector<unsigned int> indices)
+	Renderer::Renderer(const std::vector<GeometryGenerator::Vertex> vertices, const std::vector<unsigned int> indices, GLFWwindow* window)
 	{
+		m_ImguiPanel = std::make_unique<ImGuiPanel>(window);
 		m_Timer.Reset();
 		const std::vector<float> verticesArray = ConvertVerticesToArray(vertices);
 		m_VertexArray = std::make_unique<VertexArray>();
@@ -47,6 +48,11 @@ namespace FluidEngine
 	Renderer::~Renderer()
 	{
 		std::cout << "Renderer is destroyed" << std::endl;
+	}
+
+	void Renderer::RenderImgui(Window* window)
+	{
+		m_ImguiPanel->RenderImguiFrame(window, model, view);
 	}
 
 	const std::vector<float> Renderer::ConvertVerticesToArray(std::vector<GeometryGenerator::Vertex> vertices) const
@@ -81,13 +87,20 @@ namespace FluidEngine
 
 	void Renderer::View(const glm::vec3 translation)
 	{
-		view = glm::translate(glm::mat4(1.0f), translation);
+		view = glm::translate(glm::mat4(1.0f), translation);	
 	}
 
 	void Renderer::MVP(const std::string& blockName)
 	{
+		if (projection == prevTransforms["projection"] && model == prevTransforms["model"] && view == prevTransforms["view"])
+		{
+			return;
+		}
+		prevTransforms["projection"] = projection;
+		prevTransforms["model"] = model;
+		prevTransforms["view"] = view;
 		glm::mat4 mvp = projection * view * model;
-		m_Shader->SetUniformBlockBindingMat4(&blockName[0], mvp, 0);
+		m_Shader->SetUniformBlockBindingMat4(blockName.c_str(), mvp, 0);
 	}
 
 	void Renderer::SetColor(const std::string& blockName, std::vector<float> color)
@@ -102,13 +115,13 @@ namespace FluidEngine
 		m_Shader->SetUniformInt(texName, texSlot);
 	}
 
-	void Renderer::Draw(ImGuiPanel& panel) const
+	void Renderer::Draw() const
 	{
 		m_VertexArray->Bind();
 		m_Texture->Bind();
 		m_IndexBuffer->Bind();
 		GL_CHECK_ERROR(glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, 0));
-		panel.DrawImgui();
+		m_ImguiPanel->DrawImgui();
 	}
 
 	void Renderer::Clear() const

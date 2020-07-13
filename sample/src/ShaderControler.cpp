@@ -111,31 +111,51 @@ namespace FluidEngine {
 
 	void ShaderControler::SetUniformBlockBindingFloat(const char* blockName, std::vector<float> data, unsigned int binding)
 	{
-		GL_CHECK_ERROR(unsigned int blockIndex = glGetUniformBlockIndex(m_RenderID, blockName));
-		ASSERT(blockIndex != GL_INVALID_INDEX);
+		int blockIndex = GetUniformBlockIndex(blockName);
 		GL_CHECK_ERROR(glUniformBlockBinding(m_RenderID, blockIndex, binding));
 		m_UniformBuffer->Bind(&data[0], sizeof(float) * data.size(), binding);
 	}
 
 	void ShaderControler::SetUniformBlockBindingMat4(const char* blockName, glm::mat4 data, unsigned int binding)
 	{
-		GL_CHECK_ERROR(unsigned int blockIndex = glGetUniformBlockIndex(m_RenderID, blockName));
-		ASSERT(blockIndex != GL_INVALID_INDEX);
+		int blockIndex = GetUniformBlockIndex(blockName);
 		GL_CHECK_ERROR(glUniformBlockBinding(m_RenderID, blockIndex, binding));
 		m_UniformBuffer->Bind(&data[0][0], sizeof(glm::mat4), binding);
 	}
 
 	void ShaderControler::SetUniformInt(const char* name, int value)
 	{
-		GL_CHECK_ERROR(int location = glGetUniformLocation(m_RenderID, name));
-		ASSERT(location != GL_INVALID_INDEX);
+		int location = GetUniformLocation(name);
 		GL_CHECK_ERROR(glUniform1i(location, value));
 	}
 
 	void ShaderControler::SetUniformMat4(const char* name, glm::mat4 value)
 	{
-		GL_CHECK_ERROR(int location = glGetUniformLocation(m_RenderID, name));
-		ASSERT(location != GL_INVALID_INDEX);
+		int location = GetUniformLocation(name);
 		GL_CHECK_ERROR(glUniformMatrix4fv(location, 1, false, &value[0][0]));
+	}
+
+	int ShaderControler::GetUniformBlockIndex(std::string blockName)
+	{
+		if(uniformBlockCache.find(blockName) != uniformBlockCache.end())
+		{
+			return uniformBlockCache[blockName];
+		}
+		GL_CHECK_ERROR(unsigned int blockIndex = glGetUniformBlockIndex(m_RenderID, blockName.c_str()));
+		ASSERT(blockIndex != GL_INVALID_INDEX);
+		uniformBlockCache[blockName] = blockIndex;
+		return blockIndex;
+	}
+
+	int ShaderControler::GetUniformLocation(std::string uniformName)
+	{
+		if (uniformCache.find(uniformName) != uniformCache.end())
+		{
+			return uniformCache[uniformName];
+		}
+		GL_CHECK_ERROR(int location = glGetUniformLocation(m_RenderID, uniformName.c_str()));
+		ASSERT(location != GL_INVALID_INDEX);
+		uniformCache[uniformName] = location;
+		return location;
 	}
 }

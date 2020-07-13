@@ -43,33 +43,27 @@ namespace FluidEngine
 	void Application::MainLoop()
 	{
 		{
-
-			ImGuiPanel panel;
-			panel.InitiateImgui(m_Window->GetWindow());
 			int height = m_Window->GetHeight();
 			int width = m_Window->GetWidth();
 			auto meshData = m_GeomGenerator.CreateBox(100, 100, 0, 1);
-			m_Renderer = std::make_unique<Renderer>(meshData.Vertices, meshData.Indices);
+			m_Renderer = std::make_unique<Renderer>(meshData.Vertices, meshData.Indices, m_Window->GetWindow());
 			m_Renderer->OrthogonalProjection(-width / 2, width / 2, -height / 2, height / 2, -1 , 1);
-			m_Renderer->Model(glm::vec3(100, 0, 0));
-			m_Renderer->View(glm::vec3(100, 200, 0));
-			m_Renderer->MVP("MatrixBuffer");
-
+			m_Renderer->View(glm::vec3(0));
+			m_Renderer->Model(glm::vec3(0));
 			m_Renderer->SetColor("ColorBuffers", std::vector<float>{0, 1, 1, 1});
 			m_Renderer->SetTexture("res/image/dog.png", "SPIRV_Cross_CombinedshaderTexturesampleType", 0, false);
 			m_Renderer->Blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			
 			while (!glfwWindowShouldClose(m_Window->GetWindow()))
 			{
+				m_Renderer->MVP("MatrixBuffer");
 				m_Renderer->Tick();
 				m_Renderer->CalculateFrameStats();
-				panel.RenderImguiFrame(m_Window->GetWindow());
+				m_Renderer->RenderImgui(m_Window.get());
 				glfwSwapBuffers(m_Window->GetWindow());
 				glfwPollEvents();
 				m_Renderer->Clear();
-				m_Renderer->Draw(panel);
+				m_Renderer->Draw();
 			}
-			panel.TerminateImgui();
 		}
 		Terminate();
 	}

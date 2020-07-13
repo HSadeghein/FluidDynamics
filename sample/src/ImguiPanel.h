@@ -3,17 +3,18 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 #include "Window.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 
 namespace FluidEngine {
 	class ImGuiPanel
 	{
 	public:
-		ImGuiPanel(){}
-		~ImGuiPanel() {}
-		void InitiateImgui(GLFWwindow* window);
-		void RenderImguiFrame(GLFWwindow* window);
+		ImGuiPanel(GLFWwindow* window);
+		~ImGuiPanel();
+		void RenderImguiFrame(Window* window, glm::mat4& model, glm::mat4& view);
 		void DrawImgui();
-		void TerminateImgui();
 	private:
 		const char* m_Glsl_Version = "#version 130";
 		bool m_Show_Demo_Window = true;

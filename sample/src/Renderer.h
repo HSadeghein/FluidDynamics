@@ -1,6 +1,7 @@
 #pragma once
+#include <iostream>
+#include <unordered_map>
 #include "glad/glad.h"
-#include<iostream>
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
@@ -24,12 +25,13 @@ bool GlDisplayError();
 namespace FluidEngine {
 	class Renderer {
 	public:
-		Renderer(const std::vector<GeometryGenerator::Vertex> vertices, const std::vector<unsigned int> indices);
+		Renderer(const std::vector<GeometryGenerator::Vertex> vertices, const std::vector<unsigned int> indices, GLFWwindow* window);
 		~Renderer();
-		void Draw(ImGuiPanel& panel) const;
+		void Draw() const;
 		void Clear() const;
 		void Tick();
 		void CalculateFrameStats();
+		void RenderImgui(Window* window);
 		void SetColor(const std::string& blockName, std::vector<float> color);
 		void SetTexture(const char* path, const char* texName, int texSlot, bool invert);
 		const std::vector<float> ConvertVerticesToArray(std::vector<GeometryGenerator::Vertex> vertices) const;
@@ -38,6 +40,11 @@ namespace FluidEngine {
 		void Model(const glm::vec3 translation);
 		void View(const glm::vec3 translation);
 		void MVP(const std::string& blockName);
+
+		inline glm::mat4& Projection() { return projection; } 
+		inline glm::mat4& Model()  { return model; } 
+		inline glm::mat4& View() { return view; } 
+
 	protected:
 		GameTimer m_Timer;
 		std::unique_ptr<VertexBuffer> m_VertexBuffer;
@@ -46,6 +53,8 @@ namespace FluidEngine {
 		std::unique_ptr<VertexArray> m_VertexArray;
 		std::unique_ptr<BufferLayout> m_BufferLayout;
 		std::unique_ptr<Texture> m_Texture;
+		std::unique_ptr<ImGuiPanel> m_ImguiPanel;
+		std::unordered_map<std::string, glm::mat4> prevTransforms;
 		glm::mat4 projection, view, model;
 	};
 }
