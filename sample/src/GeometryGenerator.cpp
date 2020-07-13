@@ -79,7 +79,90 @@ namespace FluidEngine
 		meshData.Indices.assign(&i[0], &i[36]);
 
 
+		for (int i = 0; i < numOfSubdivision; i++)
+		{
+			Subdivide(meshData);
+		}
+
 		return meshData;
+	}
+
+	void GeometryGenerator::Subdivide(MeshData& meshData)
+	{
+		//				v1
+		//			   /  \
+		//			  /	   \
+		//			m0-----m1
+		//          /		 \
+		//         /		  \
+		//		  v0----m2----v2
+
+
+
+		MeshData meshDataCopy = meshData;
+
+		meshData.Vertices.resize(0);
+		meshData.Indices.resize(0);
+
+		uint32_t numTris = (uint32_t)meshDataCopy.Indices.size() / 3;
+		for (uint32_t i = 0; i < numTris; i++)
+		{
+			Vertex v0 = meshDataCopy.Vertices[meshDataCopy.Indices[3 * i + 0]];
+			Vertex v1 = meshDataCopy.Vertices[meshDataCopy.Indices[3 * i + 1]];
+			Vertex v2 = meshDataCopy.Vertices[meshDataCopy.Indices[3 * i + 2]];
+
+			Vertex m0 = CreateMidPoint(v0, v1);
+			Vertex m1 = CreateMidPoint(v1, v2);
+			Vertex m2 = CreateMidPoint(v0, v2);
+
+			meshData.Vertices.push_back(v0); //0
+			meshData.Vertices.push_back(v1); //1
+			meshData.Vertices.push_back(v2); //2
+			meshData.Vertices.push_back(m0); //3
+			meshData.Vertices.push_back(m1); //4
+			meshData.Vertices.push_back(m2); //5
+
+			meshData.Indices.push_back(i * 6 + 0);
+			meshData.Indices.push_back(i * 6 + 3);
+			meshData.Indices.push_back(i * 6 + 5);
+
+			meshData.Indices.push_back(i * 6 + 3);
+			meshData.Indices.push_back(i * 6 + 1);
+			meshData.Indices.push_back(i * 6 + 4);
+
+			meshData.Indices.push_back(i * 6 + 5);
+			meshData.Indices.push_back(i * 6 + 3);
+			meshData.Indices.push_back(i * 6 + 4);
+
+			meshData.Indices.push_back(i * 6 + 5);
+			meshData.Indices.push_back(i * 6 + 4);
+			meshData.Indices.push_back(i * 6 + 2);
+		}
+
+	}
+
+	GeometryGenerator::Vertex GeometryGenerator::CreateMidPoint(const Vertex& v0, const Vertex& v1)
+	{
+		glm::vec3 pos0 = v0.Position;
+		glm::vec3 pos1 = v1.Position;
+
+		glm::vec3 norm0 = v0.Normal;
+		glm::vec3 norm1 = v1.Normal;
+
+		glm::vec3 tan0 = v0.Tangent;
+		glm::vec3 tan1 = v1.Tangent;
+
+		glm::vec2 tex0 = v0.UV;
+		glm::vec2 tex1 = v1.UV;
+
+		glm::vec3 midPos = 0.5f * (pos0 + pos1);
+		glm::vec3 midNorm = glm::normalize(0.5f * (norm0 + norm1));
+		glm::vec3 midTang = glm::normalize(0.5f * (tan0 + tan1));
+		glm::vec2 midTex = 0.5f * (tex1 + tex0);
+
+		Vertex v(midPos, midNorm, midTang, midTex);
+
+		return v;
 	}
 
 }

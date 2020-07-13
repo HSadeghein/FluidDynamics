@@ -2,6 +2,7 @@
 
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
+#include <glm/glm.hpp>
 namespace FluidEngine
 {
 	class GeometryGenerator
@@ -44,7 +45,9 @@ namespace FluidEngine
 		}
 
 		MeshData CreateBox(float width, float height, float depth, int numOfSubdivision);
+		MeshData CreateSphere(float radius);
+		void Subdivide(MeshData& meshData);
 	private:
-
+		Vertex CreateMidPoint(const Vertex& v0, const Vertex& v1);
 	};
 }

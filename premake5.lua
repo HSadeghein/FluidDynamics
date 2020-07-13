@@ -75,7 +75,8 @@ project "sample"
 		"%{IncludeDir.spirv_cross}",
 		"%{IncludeDir.glfw}",
 		"%{IncludeDir.spdlog}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{prj.name}/src"
 	}
 	libdirs
 	{
