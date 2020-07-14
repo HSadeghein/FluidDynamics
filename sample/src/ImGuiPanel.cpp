@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
-
 #include "ImguiPanel.h"
+
 namespace FluidEngine
 {
 	ImGuiPanel::ImGuiPanel(GLFWwindow* window)
@@ -18,22 +18,36 @@ namespace FluidEngine
 		ImGui::DestroyContext();
 	}
 
-	void ImGuiPanel::RenderImguiFrame(Window* window, glm::mat4& model, glm::mat4& view)
+	void ImGuiPanel::RenderImguiFrame(Window* window, Transform* transform, Camera* camera)
 	{
 		int display_w, display_h;
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
-		
 		ImGui::NewFrame();
+		
 		{
-			static glm::vec3 translateCamera = glm::vec3(0.0);
-			static glm::vec3 translateObject = glm::vec3(0.0);
+			static glm::vec3 positionCamera = glm::vec3(0.0);
+			static glm::vec3 position = glm::vec3(0.0);
+			static glm::vec3 rotation = glm::vec3(0.0);
+			static glm::vec3 scale = glm::vec3(1.0);
 
-			ImGui::InputFloat3("Camera Position", &translateCamera[0]);
-			view = glm::translate(glm::mat4(1.0), -translateCamera);
-			ImGui::InputFloat3("Object Position", &translateObject[0]);
-			model = glm::translate(glm::mat4(1.0), translateObject);
+
+			if (camera->GetCameraType() == CameraType::Orthogonal)
+			{
+				ImGui::Text("Orthogonal Camera : ");
+				ImGui::InputFloat3("Camera Position", &positionCamera[0]);
+				camera->SetPosition(positionCamera);
+			}
+
+			ImGui::Text("Transform : ");
+			ImGui::InputFloat3("Position", &position[0]);
+			ImGui::InputFloat3("Rotation", &rotation[0]);
+			ImGui::InputFloat3("Scale", &scale[0]);
+			transform->SetPosition(position);
+			transform->SetRotation(rotation);
+			transform->SetScale(scale);
 		}
+
 		ImGui::Render();
 		glfwGetFramebufferSize(window->GetWindow(), &display_w, &display_h);
 		glViewport(0, 0, display_w, display_h);

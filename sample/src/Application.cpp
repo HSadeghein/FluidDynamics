@@ -45,14 +45,13 @@ namespace FluidEngine
 		{
 			int height = m_Window->GetHeight();
 			int width = m_Window->GetWidth();
-			auto meshData = m_GeomGenerator.CreateBox(100, 100, 0, 1);
-			m_Renderer = std::make_unique<Renderer>(meshData.Vertices, meshData.Indices, m_Window->GetWindow());
-			m_Renderer->OrthogonalProjection(-width / 2, width / 2, -height / 2, height / 2, -1 , 1);
-			m_Renderer->View(glm::vec3(0));
-			m_Renderer->Model(glm::vec3(0));
+			auto meshData = m_GeomGenerator.CreateBox(100, 100, 1, 1);
+			m_Renderer = std::make_unique<Renderer>(meshData.Vertices, meshData.Indices, m_Window.get());
+			m_Renderer->SetCamera(CameraType::Orthogonal);
+			m_Renderer->Model(glm::vec3(0), glm::vec3(0), glm::vec3(1));
 			m_Renderer->SetColor("ColorBuffers", std::vector<float>{0, 1, 1, 1});
-			m_Renderer->SetTexture("res/image/dog.png", "SPIRV_Cross_CombinedshaderTexturesampleType", 0, false);
-			m_Renderer->Blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			m_Renderer->SetTexture("res/image/stoke.jpg", "SPIRV_Cross_CombinedshaderTexturesampleType", 0, false);
+			m_Renderer->Blend(GL_ONE, GL_ZERO);
 			while (!glfwWindowShouldClose(m_Window->GetWindow()))
 			{
 				m_Renderer->MVP("MatrixBuffer");

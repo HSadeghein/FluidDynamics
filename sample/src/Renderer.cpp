@@ -22,9 +22,11 @@ bool GlDisplayError()
 
 namespace FluidEngine
 {
-	Renderer::Renderer(const std::vector<GeometryGenerator::Vertex> vertices, const std::vector<unsigned int> indices, GLFWwindow* window)
+	Renderer::Renderer(const std::vector<GeometryGenerator::Vertex> vertices, const std::vector<unsigned int> indices, Window* window)
 	{
-		m_ImguiPanel = std::make_unique<ImGuiPanel>(window);
+		m_WindowWidth = window->GetWidth();
+		m_WindowHeight = window->GetHeight();
+		m_ImguiPanel = std::make_unique<ImGuiPanel>(window->GetWindow());
 		m_Timer.Reset();
 		const std::vector<float> verticesArray = ConvertVerticesToArray(vertices);
 		m_VertexArray = std::make_unique<VertexArray>();
@@ -52,7 +54,7 @@ namespace FluidEngine
 
 	void Renderer::RenderImgui(Window* window)
 	{
-		m_ImguiPanel->RenderImguiFrame(window, model, view);
+		m_ImguiPanel->RenderImguiFrame(window, m_Transform.get(), m_Camera.get());
 	}
 
 	const std::vector<float> Renderer::ConvertVerticesToArray(std::vector<GeometryGenerator::Vertex> vertices) const
@@ -75,31 +77,39 @@ namespace FluidEngine
 		return v;
 	}
 
-	void Renderer::OrthogonalProjection(const float& left, const float& right, const float& bottom, const float& top, const float& nearZ, const float& farZ)
+	void Renderer::SetCamera(CameraType cameraType)
 	{
-		projection = glm::ortho(left, right, bottom, top);
+		if (cameraType == CameraType::Orthogonal)
+		{
+			float width = m_WindowWidth;
+			float height = m_WindowHeight;
+			m_Camera = std::make_unique<OrthogonalCamera>(glm::vec3(0), cameraType, -width / 2, width / 2,
+				-height / 2, height / 2);
+			m_View = m_Camera->CalcViewMatrix();
+			m_Projection = m_Camera->CalcProjectionMatrix();
+		}
 	}
 
-	void Renderer::Model(const glm::vec3 translation)
+	void Renderer::Model(const glm::vec3 translation, const glm::vec3 rotaion, const glm::vec3 scale)
 	{
-		model = glm::translate(glm::mat4(1.0f), translation);
-	}
-
-	void Renderer::View(const glm::vec3 translation)
-	{
-		view = glm::translate(glm::mat4(1.0f), translation);	
+		m_Transform = std::make_unique<Transform>(translation, rotaion, scale);
+		m_Model = m_Transform->CalcTransformMatrix();
 	}
 
 	void Renderer::MVP(const std::string& blockName)
 	{
-		if (projection == prevTransforms["projection"] && model == prevTransforms["model"] && view == prevTransforms["view"])
+		m_Model = m_Transform->CalcTransformMatrix();
+		m_View = m_Camera->CalcViewMatrix();
+		m_Projection = m_Camera->CalcProjectionMatrix();
+		if (m_Projection == prevTransforms["projection"] && m_Model == prevTransforms["model"] 
+			&& m_View == prevTransforms["view"])
 		{
 			return;
 		}
-		prevTransforms["projection"] = projection;
-		prevTransforms["model"] = model;
-		prevTransforms["view"] = view;
-		glm::mat4 mvp = projection * view * model;
+		prevTransforms["projection"] = m_Projection;
+		prevTransforms["model"] = m_Model;
+		prevTransforms["view"] = m_View;
+		glm::mat4 mvp = m_Projection * m_View * m_Model;
 		m_Shader->SetUniformBlockBindingMat4(blockName.c_str(), mvp, 0);
 	}
 

@@ -11,6 +11,9 @@
 #include "ImguiPanel.h"
 #include "GameTimer.h"
 #include "GeometryGenerator.h"
+#include "Transform.h"
+#include "Camera.h"
+#include "OrthogonalCamera.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -25,7 +28,7 @@ bool GlDisplayError();
 namespace FluidEngine {
 	class Renderer {
 	public:
-		Renderer(const std::vector<GeometryGenerator::Vertex> vertices, const std::vector<unsigned int> indices, GLFWwindow* window);
+		Renderer(const std::vector<GeometryGenerator::Vertex> vertices, const std::vector<unsigned int> indices, Window* window);
 		~Renderer();
 		void Draw() const;
 		void Clear() const;
@@ -36,16 +39,16 @@ namespace FluidEngine {
 		void SetTexture(const char* path, const char* texName, int texSlot, bool invert);
 		const std::vector<float> ConvertVerticesToArray(std::vector<GeometryGenerator::Vertex> vertices) const;
 		void Blend(unsigned int src, unsigned int dest);
-		void OrthogonalProjection(const float& left, const float&right, const float& bottom, const float& top, const float& nearZ, const float& farZ);
-		void Model(const glm::vec3 translation);
-		void View(const glm::vec3 translation);
+		void Model(const glm::vec3 translation, const glm::vec3 rotaion, const glm::vec3 scale);
+		void SetCamera(CameraType cameraType);
 		void MVP(const std::string& blockName);
 
-		inline glm::mat4& Projection() { return projection; } 
-		inline glm::mat4& Model()  { return model; } 
-		inline glm::mat4& View() { return view; } 
+		inline glm::mat4& Projection() { return m_Projection; } 
+		inline glm::mat4& Model()  { return m_Model; } 
+		inline glm::mat4& View() { return m_View; } 
 
 	protected:
+		float m_WindowHeight, m_WindowWidth;
 		GameTimer m_Timer;
 		std::unique_ptr<VertexBuffer> m_VertexBuffer;
 		std::unique_ptr<IndexBuffer> m_IndexBuffer;
@@ -54,8 +57,10 @@ namespace FluidEngine {
 		std::unique_ptr<BufferLayout> m_BufferLayout;
 		std::unique_ptr<Texture> m_Texture;
 		std::unique_ptr<ImGuiPanel> m_ImguiPanel;
+		std::unique_ptr<Transform> m_Transform;
+		std::unique_ptr<Camera> m_Camera;
 		std::unordered_map<std::string, glm::mat4> prevTransforms;
-		glm::mat4 projection, view, model;
+		glm::mat4 m_Projection, m_View, m_Model;
 	};
 }
 
