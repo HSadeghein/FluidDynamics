@@ -14,6 +14,7 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "OrthogonalCamera.h"
+#include "PerspectiveCamera.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -41,6 +42,7 @@ namespace FluidEngine {
 		void Blend(unsigned int src, unsigned int dest);
 		void Model(const glm::vec3 translation, const glm::vec3 rotaion, const glm::vec3 scale);
 		void SetCamera(CameraType cameraType);
+		void SetCamera(CameraType cameraType, float fov, float aspect, float zNear, float zFar);
 		void MVP(const std::string& blockName);
 
 		inline glm::mat4& Projection() { return m_Projection; } 

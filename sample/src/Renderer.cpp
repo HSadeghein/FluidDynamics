@@ -88,6 +88,26 @@ namespace FluidEngine
 			m_View = m_Camera->CalcViewMatrix();
 			m_Projection = m_Camera->CalcProjectionMatrix();
 		}
+		else
+		{
+			std::cout << "Wrong Camera Type" << std::endl;
+			ASSERT(false);
+		}
+	}
+
+	void Renderer::SetCamera(CameraType cameraType, float fov, float aspect, float zNear, float zFar)
+	{
+		if (cameraType == CameraType::Perspective)
+		{
+			m_Camera = std::make_unique<PerspectiveCamera>(glm::vec3(0, 0, -50), cameraType, aspect, fov, zNear, zFar, glm::vec3(0));
+			m_View = m_Camera->CalcViewMatrix();
+			m_Projection = m_Camera->CalcProjectionMatrix();
+		}
+		else
+		{
+			std::cout << "Wrong Camera Type" << std::endl;
+			ASSERT(false);
+		}
 	}
 
 	void Renderer::Model(const glm::vec3 translation, const glm::vec3 rotaion, const glm::vec3 scale)

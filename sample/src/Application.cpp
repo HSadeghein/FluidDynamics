@@ -45,9 +45,12 @@ namespace FluidEngine
 		{
 			int height = m_Window->GetHeight();
 			int width = m_Window->GetWidth();
-			auto meshData = m_GeomGenerator.CreateBox(100, 100, 1, 1);
+			auto meshData = m_GeomGenerator.CreateBox(10, 10, 10, 1);
+			//glEnable(GL_CULL_FACE);
+			glCullFace(GL_BACK);
+			glFrontFace(GL_CW);
 			m_Renderer = std::make_unique<Renderer>(meshData.Vertices, meshData.Indices, m_Window.get());
-			m_Renderer->SetCamera(CameraType::Orthogonal);
+			m_Renderer->SetCamera(CameraType::Perspective, 45, (float)(width / height), 0.01, 1000.0f);
 			m_Renderer->Model(glm::vec3(0), glm::vec3(0), glm::vec3(1));
 			m_Renderer->SetColor("ColorBuffers", std::vector<float>{0, 1, 1, 1});
 			m_Renderer->SetTexture("res/image/stoke.jpg", "SPIRV_Cross_CombinedshaderTexturesampleType", 0, false);

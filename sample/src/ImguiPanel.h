@@ -6,6 +6,7 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "OrthogonalCamera.h"
+#include "PerspectiveCamera.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
