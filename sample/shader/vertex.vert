@@ -26,12 +26,14 @@ layout(location = 0) in vec3 input_position;
 layout(location = 1) in vec3 input_normal;
 layout(location = 2) in vec3 input_tangent;
 layout(location = 3) in vec2 input_uv;
+layout(location = 4) in mat4 WVP;
+layout(location = 8) in mat4 World;
 out vec2 _entryPointOutput_uv;
 
 FragmentInput _main(VertexInput _input)
 {
     FragmentInput _output;
-    _output.position = vec4(_input.position, 1.0) * _71.mvp;
+    _output.position = WVP * vec4(_input.position, 1.0) ;
     _output.uv = _input.uv;
     return _output;
 }

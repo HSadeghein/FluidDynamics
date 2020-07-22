@@ -40,4 +40,20 @@ namespace FluidEngine {
 			offset += element.count * sizeof(element.type);
 		}
 	}
+
+	void VertexArray::AddBuffer(int startIndex, BufferLayout& bufferLayout, VertexBuffer& vertexBuffer)
+	{
+		vertexBuffer.Bind();
+		std::vector<BufferElement> elements = bufferLayout.GetElements();
+		unsigned int offset = 0;
+		for (int i = 0; i < elements.size(); i++)
+		{
+			BufferElement element = elements[i];
+			GL_CHECK_ERROR(glEnableVertexAttribArray(i + startIndex));
+			GL_CHECK_ERROR(glVertexAttribPointer(startIndex + i, element.count, element.type, element.normalized,
+				bufferLayout.GetStride(), (const void*)offset));
+			glVertexAttribDivisor(startIndex + i, 1);
+			offset += element.count * sizeof(element.type);
+		}
+	}
 }

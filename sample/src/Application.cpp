@@ -6,6 +6,9 @@
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "ShaderControler.h"
+#include "Object.h"
+#include "Material.h"
+
 namespace FluidEngine
 {
 	void error_call_back(int error, const char* description)
@@ -45,26 +48,21 @@ namespace FluidEngine
 		{
 			int height = m_Window->GetHeight();
 			int width = m_Window->GetWidth();
-			auto meshData = m_GeomGenerator.CreateBox(10, 10, 10, 1);
-			//glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
-			glFrontFace(GL_CW);
-			m_Renderer = std::make_unique<Renderer>(meshData.Vertices, meshData.Indices, m_Window.get());
+			std::unique_ptr<Mesh> InstancedMesh = std::make_unique<Mesh>(m_GeomGenerator.CreateBox(10, 10, 10, 1));
+			m_Renderer = std::make_unique<Renderer>(m_Window.get());
 			m_Renderer->SetCamera(CameraType::Perspective, 45, (float)(width / height), 0.01, 1000.0f);
-			m_Renderer->Model(glm::vec3(0), glm::vec3(0), glm::vec3(1));
-			m_Renderer->SetColor("ColorBuffers", std::vector<float>{0, 1, 1, 1});
-			m_Renderer->SetTexture("res/image/stoke.jpg", "SPIRV_Cross_CombinedshaderTexturesampleType", 0, false);
-			m_Renderer->Blend(GL_ONE, GL_ZERO);
+			m_Renderer->CreateMaterial("shader/vertex.vert", "shader/pixel.frag", "res/image/stoke.jpg", glm::vec4(1));
+			m_Renderer->SetUpGPUInstancing(InstancedMesh.get(), 2);
 			while (!glfwWindowShouldClose(m_Window->GetWindow()))
 			{
-				m_Renderer->MVP("MatrixBuffer");
 				m_Renderer->Tick();
 				m_Renderer->CalculateFrameStats();
 				m_Renderer->RenderImgui(m_Window.get());
+				m_Renderer->UpdateTransforms();
 				glfwSwapBuffers(m_Window->GetWindow());
 				glfwPollEvents();
 				m_Renderer->Clear();
-				m_Renderer->Draw();
+				m_Renderer->InstanceDraw();
 			}
 		}
 		Terminate();

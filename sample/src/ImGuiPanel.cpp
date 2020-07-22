@@ -18,7 +18,7 @@ namespace FluidEngine
 		ImGui::DestroyContext();
 	}
 
-	void ImGuiPanel::RenderImguiFrame(Window* window, Transform* transform, Camera* camera)
+	void ImGuiPanel::RenderImguiFrame(Window* window, std::vector<Object*> objects, Camera* camera)
 	{
 		int display_w, display_h;
 		ImGui_ImplOpenGL3_NewFrame();
@@ -28,9 +28,6 @@ namespace FluidEngine
 		{
 			static glm::vec3 positionCamera = glm::vec3(0, 0, -50);
 			static glm::vec3 rotationCamera = glm::vec3(0.0);
-			static glm::vec3 position = glm::vec3(0.0);
-			static glm::vec3 rotation = glm::vec3(0.0);
-			static glm::vec3 scale = glm::vec3(1.0);
 			static float fov = 45;
 
 			if (camera->GetCameraType() == CameraType::Orthogonal)
@@ -44,19 +41,25 @@ namespace FluidEngine
 				ImGui::Text("Perspective Camera : ");
 				ImGui::InputFloat3("Camera Position", &positionCamera[0]);
 				ImGui::InputFloat3("Camera Rotation", &rotationCamera[0]);
-				ImGui::InputFloat("Fiedl of View", &fov);
+				ImGui::InputFloat("Field of View", &fov);
 				camera->SetPosition(positionCamera);
 				dynamic_cast<PerspectiveCamera*>(camera)->SetFOV(fov);
 				dynamic_cast<PerspectiveCamera*>(camera)->SetRotation(rotationCamera);
 			}
-
-			ImGui::Text("Transform : ");
-			ImGui::InputFloat3("Position", &position[0]);
-			ImGui::InputFloat3("Rotation", &rotation[0]);
-			ImGui::InputFloat3("Scale", &scale[0]);
-			transform->SetPosition(position);
-			transform->SetRotation(rotation);
-			transform->SetScale(scale);
+			//for (auto& object : objects)
+			//{
+			//	auto transform = object->GetTransform();
+			//static glm::vec3 position = glm::vec3(0.0);
+			//static glm::vec3 rotation = glm::vec3(0.0);
+			//static glm::vec3 scale = glm::vec3(1.0);
+			//	ImGui::Text(("Transform " + object->GetName() + ": ").c_str());
+			//	ImGui::InputFloat3(("Position##" + object->GetName()).c_str(), &position[0]);
+			//	ImGui::InputFloat3(("Rotation##" + object->GetName()).c_str(), &rotation[0]);
+			//	ImGui::InputFloat3(("Scale##" + object->GetName()).c_str(), &scale[0]);
+			//	transform->SetPosition(position);
+			//	transform->SetRotation(rotation);
+			//	transform->SetScale(scale);
+			//}
 		}
 
 		ImGui::Render();

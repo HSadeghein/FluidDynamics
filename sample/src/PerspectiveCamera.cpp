@@ -11,6 +11,7 @@ namespace FluidEngine
 		{
 			float diffAngleX = m_Rotation.x - m_PropertyCache["rotation"].x;
 			m_Forward = glm::rotateX(m_Forward, diffAngleX * DEG_RAD);
+			m_Up = glm::rotateX(m_Up, diffAngleX * DEG_RAD);
 			m_PropertyCache["rotation"].x = m_Rotation.x;
 		}
 		if (m_PropertyCache["rotation"].y != m_Rotation.y)
@@ -23,6 +24,7 @@ namespace FluidEngine
 		{
 			float diffAngleZ = m_Rotation.z - m_PropertyCache["rotation"].z;
 			m_Forward = glm::rotateZ(m_Forward, diffAngleZ * DEG_RAD);
+			m_Up = glm::rotateZ(m_Up, diffAngleZ * DEG_RAD);
 			m_PropertyCache["rotation"].z = m_Rotation.z;
 		}
 		return glm::lookAt(m_Position, m_Position + m_Forward, m_Up);

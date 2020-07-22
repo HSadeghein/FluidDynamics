@@ -43,6 +43,12 @@ namespace FluidEngine {
             m_Stride += count * sizeof(unsigned char);
         }
 
+        void Clear()
+        {
+            m_Elements.clear();
+            m_Stride = 0;
+        }
+
         inline const unsigned int GetStride() const{ return m_Stride; }
         inline const std::vector<BufferElement> GetElements() const { return m_Elements; }
 
