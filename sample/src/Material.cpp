@@ -24,9 +24,13 @@ namespace FluidEngine
 		m_Shader->AddShader({ filePath.c_str(), GL_FRAGMENT_SHADER, true });
 	}
 
-	void Material::CompileRunShaders()
+	void Material::CompileShaders()
 	{
-		m_Shader->CreateShaderProgram();
+		m_Shader->CreateShaderProgram();	
+	}
+
+	void Material::RunShader()
+	{
 		m_Shader->UseShaderProgram();
 	}
 
@@ -48,8 +52,23 @@ namespace FluidEngine
 		m_Shader->SetUniformBlockBindingFloat(blockName.c_str(), color, 1);
 	}
 
+	void Material::SetUniformMat4(const std::string& uniformName, const glm::mat4 matrix)
+	{
+		m_Shader->SetUniformMat4(uniformName.c_str(), matrix);
+	}
+
+	void Material::SetUniformBool(const std::string& uniformName, const bool value)
+	{
+		m_Shader->SetUniformBool(uniformName, value);
+	}
+
 	void Material::BindTexture(unsigned int slot)
 	{
 		m_Texture->Bind(slot);
+	}
+
+	void Material::GetRenderID()
+	{
+		std::cout << m_Shader->RenderID() << std::endl;
 	}
 }

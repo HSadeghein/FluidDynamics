@@ -17,7 +17,7 @@ namespace FluidEngine {
 	public:
 		ImGuiPanel(GLFWwindow* window);
 		~ImGuiPanel();
-		void RenderImguiFrame(Window* window, std::vector<Object*> objects, Camera* camera);
+		void RenderImguiFrame(Window* window, Camera* camera);
 		void DrawImgui();
 	private:
 		const char* m_Glsl_Version = "#version 130";

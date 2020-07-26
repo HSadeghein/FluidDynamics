@@ -18,7 +18,7 @@ namespace FluidEngine
 		ImGui::DestroyContext();
 	}
 
-	void ImGuiPanel::RenderImguiFrame(Window* window, std::vector<Object*> objects, Camera* camera)
+	void ImGuiPanel::RenderImguiFrame(Window* window, Camera* camera)
 	{
 		int display_w, display_h;
 		ImGui_ImplOpenGL3_NewFrame();

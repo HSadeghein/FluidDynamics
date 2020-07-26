@@ -28,8 +28,10 @@ namespace FluidEngine {
 		void SetUniformBlockBindingMat4(const char* blockName, glm::mat4 data, unsigned int binding);
 		void SetUniformInt(const char* name, int value);
 		void SetUniformMat4(const char* name, glm::mat4 value);
+		void SetUniformBool(const std::string& uniformName, const bool value);
 		int GetUniformBlockIndex(std::string blockName);
 		int GetUniformLocation(std::string blockName);
+		inline int RenderID() { return m_RenderID; }
 	private:
 		unsigned int LoadCompileShader(Shader shader);
 		void ConvHlslToGlsl(LPCWSTR sourceName, LPCWSTR targetSPVName, LPCWSTR targetName, LPCWSTR glslangArgs[2],

@@ -135,6 +135,12 @@ namespace FluidEngine {
 		GL_CHECK_ERROR(glUniformMatrix4fv(location, 1, false, &value[0][0]));
 	}
 
+	void ShaderControler::SetUniformBool(const std::string& uniformName, const bool value)
+	{
+		int location = GetUniformLocation(uniformName);
+		GL_CHECK_ERROR(glUniform1i(location, value));
+	}
+
 	int ShaderControler::GetUniformBlockIndex(std::string blockName)
 	{
 		if(uniformBlockCache.find(blockName) != uniformBlockCache.end())

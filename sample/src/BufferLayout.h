@@ -1,7 +1,12 @@
 #pragma once
 #include <vector>
-#include<glad/glad.h>
 #include<iostream>
+
+#define GL_FLOAT 0x1406
+#define GL_UNSIGNED_INT 0x1405
+#define GL_UNSIGNED_BYTE 0x1401
+#define GL_FALSE 0
+#define GL_TRUE 1
 
 namespace FluidEngine {
 
