@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <unordered_map>
-#include "glad/glad.h"
+//#include "glad/glad.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
@@ -49,6 +49,8 @@ namespace FluidEngine {
 		inline glm::mat4& Model()  { return m_Model; } 
 		inline glm::mat4& View() { return m_View; } 
 
+		std::unique_ptr<Camera> m_Camera;
+
 	protected:
 		float m_WindowHeight, m_WindowWidth;
 		GameTimer m_Timer;
@@ -60,7 +62,6 @@ namespace FluidEngine {
 		std::unique_ptr<Texture> m_Texture;
 		std::unique_ptr<ImGuiPanel> m_ImguiPanel;
 		std::unique_ptr<Transform> m_Transform;
-		std::unique_ptr<Camera> m_Camera;
 		std::unordered_map<std::string, glm::mat4> prevTransforms;
 		glm::mat4 m_Projection, m_View, m_Model;
 	};

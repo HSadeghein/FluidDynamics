@@ -23,6 +23,7 @@ namespace FluidEngine
 		inline CameraType GetCameraType() { return m_CameraType; }
 		inline void SetPosition(glm::vec3 position) { m_Position = position; }
 		inline void SetCameraType(CameraType type) { m_CameraType = type; }
+
 	protected:
 		CameraType m_CameraType;
 		glm::vec3 m_Position;

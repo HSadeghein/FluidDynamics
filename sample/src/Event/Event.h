@@ -149,4 +149,115 @@ namespace FluidEngine
 
 		}
 	};
+
+	class RightMouseButtonPressed : public IEvent
+	{
+	public:
+		RightMouseButtonPressed()
+		{
+			type = EventTypes::RightMouseClicked;
+		}
+
+		EventTypes GetEventType() const override
+		{
+			return type;
+		}
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "Right Mouse Pressed" << '\n';
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(RightMouseClicked)
+	};
+
+	class LeftMouseButtonPressed : public IEvent
+	{
+	public:
+		LeftMouseButtonPressed()
+		{
+			type = EventTypes::LeftMouseClicked;
+		}
+
+		EventTypes GetEventType() const override
+		{
+			return type;
+		}
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "Left Mouse Pressed" << '\n';
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(LeftMouseClicked)
+	};
+	class RightMouseButtonReleased : public IEvent
+	{
+	public:
+		RightMouseButtonReleased()
+		{
+			type = EventTypes::RightMouseReleased;
+		}
+
+		EventTypes GetEventType() const override
+		{
+			return type;
+		}
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "Right mouse released" << '\n';
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(RightMouseReleased)
+	};
+	class LeftMouseButtonReleased : public IEvent
+	{
+	public:
+		LeftMouseButtonReleased()
+		{
+			type = EventTypes::LeftMouseReleased;
+		}
+
+		EventTypes GetEventType() const override
+		{
+			return type;
+		}
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "Left mouse released" << '\n';
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(LeftMouseReleased)
+	};
+
+	class MouseMoved : public IEvent
+	{
+	public:
+		MouseMoved(double xPos, double yPos) : m_XPos(xPos), m_YPos(yPos)
+		{
+			type = EventTypes::MouseMoved;
+		}
+		EventTypes GetEventType() const override
+		{
+			return type;
+		}
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "Mouse Moved --> X:" << m_XPos << "\t" << "Y:" << m_YPos << "\n";
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(MouseMoved)
+
+	private:
+		double m_XPos;
+		double m_YPos;
+	};
 }

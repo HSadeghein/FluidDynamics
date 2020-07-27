@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include <GLFW/glfw3.h>
 #include <memory>
 #include "Log.h"
@@ -8,16 +9,19 @@
 namespace FluidEngine
 {
 
-	struct DestroyglfwWin {
+	struct DestroyglfwWin
+	{
 
-		void operator()(GLFWwindow* ptr) {
+		void operator()(GLFWwindow* ptr)
+		{
 			Log::GetCoreLogger()->info("deleted");
 			glfwDestroyWindow(ptr);
 		}
 
 	};
 	class Application;
-	class Window : public IWindow {
+	class Window : public IWindow
+	{
 
 		friend class FluidEngine::Application;
 	public:
@@ -30,6 +34,8 @@ namespace FluidEngine
 		void SetWindowSize(int width, int height) override;
 		void OnUpdate() override;
 		GLFWwindow* GetWindow();
+
+		void RegisterApplication(std::shared_ptr<Application> application);
 
 		void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallBack = callback; };
 
@@ -45,6 +51,11 @@ namespace FluidEngine
 
 		bool OnKeyReleased(KeyReleasedEvent& e) override;
 
+		bool OnRightMouseButtonPressed(RightMouseButtonPressed& e) override;
+
+		bool OnLeftMouseButtonPressed(LeftMouseButtonPressed& e) override;
+
+		bool OnMouseMoved(MouseMoved& e) override;
 
 	protected:
 		void Terminate();
@@ -56,6 +67,8 @@ namespace FluidEngine
 
 
 		GLFWwindow* m_Window;
+
+		std::weak_ptr<Application> m_Application;
 
 
 		struct WindowData

@@ -1,14 +1,15 @@
 #include "pch.h"
+
 #include "Window.h"
-#include "GLFW/glfw3.h"
 
 #include "Event/Event.h"
+
+
 namespace FluidEngine
 {
 
 	Window::Window(const WindowProps& props)
 	{
-
 		Init(props);
 
 	}
@@ -20,6 +21,7 @@ namespace FluidEngine
 
 	void Window::Init(const WindowProps& props)
 	{
+
 		m_Data.WindowMode = props.Mode;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
@@ -39,7 +41,8 @@ namespace FluidEngine
 			m_Window = glfwCreateWindow(mode->width, mode->height, m_Data.Ttile, monitor, NULL);
 
 		}
-		else {
+		else
+		{
 
 			m_Window = glfwCreateWindow(m_Data.Width, m_Data.Height, m_Data.Ttile, NULL, NULL);
 		}
@@ -56,56 +59,98 @@ namespace FluidEngine
 
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+								  {
+									  WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-				data.Width = width;
-				data.Height = height;
-				WindowSizeChangedEvent e(width, height);
-				data.EventCallBack(e);
+									  data.Width = width;
+									  data.Height = height;
+									  WindowSizeChangedEvent e(width, height);
+									  data.EventCallBack(e);
 
 
-			});
+								  }
+		);
 
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-				WindowClosedEvent e;
-				data.EventCallBack(e);
+								   {
+									   WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+									   WindowClosedEvent e;
+									   data.EventCallBack(e);
 
-			}
+								   }
 		);
 
 
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scanCode, int action, int mods)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+						   {
+							   WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-				switch (action)
-				{
-				case GLFW_PRESS:
-				{
-					KeyPressedEvent e(static_cast<KeyCodes>(key), 0);
-					data.EventCallBack(e);
-					break;
-				}
-				case GLFW_RELEASE:
-				{
-					KeyReleasedEvent e(static_cast<KeyCodes>(key));
-					data.EventCallBack(e);
-					break;
-				}
-				case GLFW_REPEAT:
-				{
-					break;
-				}
-				default:
-					break;
-				}
+							   switch (action)
+							   {
+							   case GLFW_PRESS:
+							   {
+								   KeyPressedEvent e(static_cast<KeyCodes>(key), 0);
+								   data.EventCallBack(e);
+								   break;
+							   }
+							   case GLFW_RELEASE:
+							   {
+								   KeyReleasedEvent e(static_cast<KeyCodes>(key));
+								   data.EventCallBack(e);
+								   break;
+							   }
+							   case GLFW_REPEAT:
+							   {
+								   break;
+							   }
+							   default:
+								   break;
+							   }
 
-			});
+						   }
+		);
+
+		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mode)
+								   {
+									   WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+									   if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+									   {
+										   RightMouseButtonPressed e;
+										   data.EventCallBack(e);
+									   }
+									   else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+									   {
+										   LeftMouseButtonPressed e;
+										   data.EventCallBack(e);
+									   }
+									   else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+									   {
+										   RightMouseButtonReleased e;
+										   data.EventCallBack(e);
+									   }
+									   else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+									   {
+										   LeftMouseButtonReleased e;
+										   data.EventCallBack(e);
+									   }
+								   }
+		);
+
+		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos)
+								 {
+									 WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+									 MouseMoved e(xPos, yPos);
+									 data.EventCallBack(e);
+								 }
+		);
 
 	}
+
+	void Window::RegisterApplication(std::shared_ptr<Application> application)
+	{
+		m_Application = application;
+	}
+
 	void Window::SetWidth(int width)
 	{
 		m_Data.Width = width;
@@ -151,6 +196,10 @@ namespace FluidEngine
 		dispatcher.Dispatch<WindowClosedEvent>(std::bind(&Window::OnWindowClose, this, std::placeholders::_1));
 		dispatcher.Dispatch<KeyPressedEvent>(std::bind(&Window::OnKeyPressed, this, std::placeholders::_1));
 		dispatcher.Dispatch<KeyReleasedEvent>(std::bind(&Window::OnKeyReleased, this, std::placeholders::_1));
+		dispatcher.Dispatch<LeftMouseButtonPressed>(std::bind(&Window::OnLeftMouseButtonPressed, this, std::placeholders::_1));
+		dispatcher.Dispatch<RightMouseButtonPressed>(std::bind(&Window::OnRightMouseButtonPressed, this, std::placeholders::_1));
+		dispatcher.Dispatch<MouseMoved>(std::bind(&Window::OnMouseMoved, this, std::placeholders::_1));
+
 	}
 
 	bool Window::OnWindowSizeChanged(WindowSizeChangedEvent& e)
@@ -170,12 +219,39 @@ namespace FluidEngine
 	bool Window::OnKeyPressed(KeyPressedEvent& e)
 	{
 		Log::GetCoreLogger()->info(e.ToString());
+		if (e.GetKeyCode() == KeyCodes::Escape)
+		{
+			WindowClosedEvent closedEvent;
+			OnWindowClose(closedEvent);
+		}
 		return true;
 	}
 
 	bool Window::OnKeyReleased(KeyReleasedEvent& e)
 	{
 		Log::GetCoreLogger()->info(e.ToString());
+		return true;
+	}
+
+	bool Window::OnRightMouseButtonPressed(RightMouseButtonPressed& e)
+	{
+		Log::GetCoreLogger()->info(e.ToString());
+		return true;
+	}
+
+	bool Window::OnLeftMouseButtonPressed(LeftMouseButtonPressed& e)
+	{
+		Log::GetCoreLogger()->info(e.ToString());
+		return true;
+	}
+
+	bool Window::OnMouseMoved(MouseMoved& e)
+	{
+		Log::GetCoreLogger()->info(e.ToString());
+		if (auto spt = m_Application.lock())
+		{
+			//Log::GetCoreLogger()->info("Camera Position {0}", spt->m_Renderer->m_Camera->Position().x);
+		}
 		return true;
 	}
 
