@@ -13,6 +13,6 @@ layout(location = 0) out vec4 pixel_color;
 void main()
 {
     vec4 texColor = texture(_sampler, uv);
-    pixel_color = texColor * _color.color;
+    pixel_color = _color.color;
 }
 

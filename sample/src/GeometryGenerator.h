@@ -3,6 +3,9 @@
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 #include <glm/glm.hpp>
+
+#define PI 3.14
+
 namespace FluidEngine
 {
 	class GeometryGenerator
@@ -45,7 +48,7 @@ namespace FluidEngine
 		}
 
 		MeshData CreateBox(float width, float height, float depth, int numOfSubdivision);
-		MeshData CreateSphere(float radius);
+		MeshData CreateSphere(float radius, int stackCount, int sectorCount);
 		void Subdivide(MeshData& meshData);
 	private:
 		Vertex CreateMidPoint(const Vertex& v0, const Vertex& v1);

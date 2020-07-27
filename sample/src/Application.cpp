@@ -48,17 +48,14 @@ namespace FluidEngine
 		{
 			int height = m_Window->GetHeight();
 			int width = m_Window->GetWidth();
-			std::unique_ptr<Mesh> InstancedMesh = std::make_unique<Mesh>(m_GeomGenerator.CreateBox(10, 10, 10, 1));
+			std::unique_ptr<Mesh> InstancedMesh = std::make_unique<Mesh>(m_GeomGenerator.CreateSphere(10, 50, 50));
 			std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>(m_GeomGenerator.CreateBox(3, 5, 3, 1));
 			m_Renderer = std::make_unique<Renderer>(m_Window.get());
 			m_Renderer->SetCamera(CameraType::Perspective, 45, (float)(width / height), 0.01, 1000.0f);
-			std::shared_ptr<Material> material1 = std::move(m_Renderer->CreateMaterial("material1", "shader/vertex.vert", "shader/pixel.frag", "res/image/stoke.jpg", glm::vec4(1), true));
-			std::shared_ptr<Material> material2 = std::move(m_Renderer->CreateMaterial("material2", "shader/vertex.vert", "shader/pixel.frag", "res/image/stoke.jpg", glm::vec4(0.5), true));
-			m_Renderer->SetUpGPUInstancing(InstancedMesh.get(), 2000, material1);
-			m_Renderer->SetUpGPUInstancing(mesh.get(), 2, material2);
-			/*std::shared_ptr<Material> material2 = std::move(m_Renderer->CreateMaterial("material2", "shader/vertex.vert", "shader/pixel.frag", "res/image/stoke.jpg", glm::vec4(1), false));
-			std::unique_ptr<Object> object = std::make_unique<Object>(mesh.get(), "Object1", material2);
-			m_Renderer->InstertObject(object.get());*/
+			std::shared_ptr<Material> material1 = std::move(m_Renderer->CreateMaterial("material1", "shader/vertex.vert", "shader/pixel.frag", "", glm::vec4(1), true));
+			//std::shared_ptr<Material> material2 = std::move(m_Renderer->CreateMaterial("material2", "shader/vertex.vert", "shader/pixel.frag", "res/image/stoke.jpg", glm::vec4(0.5), true));
+			m_Renderer->SetUpGPUInstancing(InstancedMesh.get(), 1, material1);
+			//m_Renderer->SetUpGPUInstancing(mesh.get(), 2, material2);
 			
 			while (!glfwWindowShouldClose(m_Window->GetWindow()))
 			{

@@ -50,9 +50,12 @@ namespace FluidEngine
 		m_Materials[nameID]->RunShader();
 		m_Materials[nameID]->SetInstancing(isInstancing);
 		m_Materials[nameID]->SetColor(color);
-		m_Materials[nameID]->SetTexture(texturePath.c_str(), "_sampler", 0, false);
+		if (texturePath != "")
+		{
+			m_Materials[nameID]->SetTexture(texturePath.c_str(), "_sampler", 0, false);
+			m_Materials[nameID]->BindTexture(0);
+		}
 		m_Materials[nameID]->Blend(GL_ONE, GL_ZERO);
-		m_Materials[nameID]->BindTexture(0);
 		return m_Materials[nameID];
 	}
 
@@ -97,7 +100,7 @@ namespace FluidEngine
 
 	void Renderer::Draw()
 	{
-		m_ImguiPanel->DrawImgui();
+		
 		m_Projection = m_Camera->CalcProjectionMatrix();
 		m_View = m_Camera->CalcViewMatrix();
 		for (auto& gpuInstancing : m_GPUInstancings)
@@ -106,6 +109,7 @@ namespace FluidEngine
 			gpuInstancing->OnUpdate(m_Projection, m_View);
 			gpuInstancing->Draw();
 		}
+		m_ImguiPanel->DrawImgui();
 	}
 
 	void Renderer::Clear() const
@@ -129,10 +133,8 @@ namespace FluidEngine
 		{
 			float fps = (float)frameCount;
 			float mspf = 1000.0f / fps;
-
 			Log::GetCoreLogger()->info("FPS is {}", fps);
 			Log::GetCoreLogger()->info("Frame per milisecond is {}", mspf);
-
 			frameCount = 0;
 			timeElapsed += 1.0f;
 		}
