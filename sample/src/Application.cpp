@@ -1,26 +1,22 @@
 #include "pch.h"
 
 #include "Application.h"
-
+#include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "ShaderControler.h"
 #include "Object.h"
 #include "Material.h"
-
 namespace FluidEngine
 {
-	Application *Application::m_AppInstance = nullptr;
-	Application::Application()
-	{
-	}
-	void error_call_back(int error, const char *description)
+	Application* Application::m_AppInstance = nullptr;
+	void error_call_back(int error, const char* description)
 	{
 		Log::GetCoreLogger()->error("Error: {}", description);
 	}
 
-	Application &Application::Get()
+	Application& Application::Get()
 	{
 		if (m_AppInstance == nullptr)
 		{
@@ -72,9 +68,7 @@ namespace FluidEngine
 			glFrontFace(GL_CCW);
 			//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-			m_Renderer = std::make_unique<Renderer>(meshData.Vertices, meshData.Indices, m_Window.get());
-			== == == =
-						 std::unique_ptr<Mesh> InstancedMesh = std::make_unique<Mesh>(m_GeomGenerator.CreateBox(10, 10, 10, 1));
+			std::unique_ptr<Mesh> InstancedMesh = std::make_unique<Mesh>(m_GeomGenerator.CreateBox(10, 10, 10, 1));
 			std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>(m_GeomGenerator.CreateBox(3, 5, 3, 1));
 			m_Renderer = std::make_unique<Renderer>(m_Window.get());
 			m_Renderer->SetCamera(CameraType::Perspective, 45, (float)(width / height), 0.01, 1000.0f);

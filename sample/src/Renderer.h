@@ -47,7 +47,6 @@ namespace FluidEngine
 		inline glm::mat4 &Projection() { return m_Projection; }
 		inline glm::mat4 &View() { return m_View; }
 
-		std::unique_ptr<Camera> m_Camera;
 
 	protected:
 		int m_InstanceNumber;
