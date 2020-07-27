@@ -22,29 +22,12 @@ bool GlDisplayError()
 
 namespace FluidEngine
 {
-	Renderer::Renderer(const std::vector<GeometryGenerator::Vertex> vertices, const std::vector<unsigned int> indices, Window* window)
+	Renderer::Renderer(Window* window)
 	{
 		m_WindowWidth = window->GetWidth();
 		m_WindowHeight = window->GetHeight();
 		m_ImguiPanel = std::make_unique<ImGuiPanel>(window->GetWindow());
 		m_Timer.Reset();
-		const std::vector<float> verticesArray = ConvertVerticesToArray(vertices);
-		m_VertexArray = std::make_unique<VertexArray>();
-		m_VertexBuffer = std::make_unique<VertexBuffer>(&verticesArray[0], verticesArray.size() * sizeof(float));
-		m_BufferLayout = std::make_unique<BufferLayout>();
-		m_BufferLayout->Push<float>(3);
-		m_BufferLayout->Push<float>(3);
-		m_BufferLayout->Push<float>(3);
-		m_BufferLayout->Push<float>(2);
-		m_VertexArray->AddBuffer(*m_BufferLayout, *m_VertexBuffer);
-		m_IndexBuffer = std::make_unique<IndexBuffer>(&indices[0], indices.size());
-		
-		m_Shader = std::make_unique<ShaderControler>();
-		//m_Shader->ConvAllHlslToGlsl();
-		m_Shader->AddShader({ "shader/vertex.vert", GL_VERTEX_SHADER, true });
-		m_Shader->AddShader({ "shader/pixel.frag", GL_FRAGMENT_SHADER, true });
-		m_Shader->CreateShaderProgram();
-		m_Shader->UseShaderProgram();
 	}
 
 	Renderer::~Renderer()
@@ -54,27 +37,29 @@ namespace FluidEngine
 
 	void Renderer::RenderImgui(Window* window)
 	{
-		m_ImguiPanel->RenderImguiFrame(window, m_Transform.get(), m_Camera.get());
+		m_ImguiPanel->RenderImguiFrame(window, m_Camera.get());
 	}
 
-	const std::vector<float> Renderer::ConvertVerticesToArray(std::vector<GeometryGenerator::Vertex> vertices) const
+	std::shared_ptr<Material> Renderer::CreateMaterial(std::string nameID, std::string vertexShader, std::string pixelShader, std::string texturePath, glm::vec4 color, bool isInstancing)
 	{
-		std::vector<float> v;
-		for (auto& x : vertices)
-		{
-			v.push_back(x.Position.x);
-			v.push_back(x.Position.y);
-			v.push_back(x.Position.z);
-			v.push_back(x.Normal.x);
-			v.push_back(x.Normal.y);
-			v.push_back(x.Normal.z);
-			v.push_back(x.Tangent.x);
-			v.push_back(x.Tangent.y);
-			v.push_back(x.Tangent.z);
-			v.push_back(x.UV.x);
-			v.push_back(x.UV.y);
-		}
-		return v;
+		std::shared_ptr<Material> material = std::make_shared<Material>();
+		m_Materials[nameID] = std::move(material);
+		m_Materials[nameID]->AppendVertexShader(vertexShader);
+		m_Materials[nameID]->AppendPixelShader(pixelShader);
+		m_Materials[nameID]->CompileShaders();
+		m_Materials[nameID]->RunShader();
+		m_Materials[nameID]->SetInstancing(isInstancing);
+		m_Materials[nameID]->SetColor(color);
+		m_Materials[nameID]->SetTexture(texturePath.c_str(), "_sampler", 0, false);
+		m_Materials[nameID]->Blend(GL_ONE, GL_ZERO);
+		m_Materials[nameID]->BindTexture(0);
+		return m_Materials[nameID];
+	}
+
+	void Renderer::SetUpGPUInstancing(Mesh* mesh, int instanceNumber, std::shared_ptr<Material> material)
+	{
+		std::unique_ptr<GPUInstancing> gpuInstancing = std::make_unique<GPUInstancing>(instanceNumber, mesh, material);
+		m_GPUInstancings.push_back(std::move(gpuInstancing));
 	}
 
 	void Renderer::SetCamera(CameraType cameraType)
@@ -110,48 +95,17 @@ namespace FluidEngine
 		}
 	}
 
-	void Renderer::Model(const glm::vec3 translation, const glm::vec3 rotaion, const glm::vec3 scale)
+	void Renderer::Draw()
 	{
-		m_Transform = std::make_unique<Transform>(translation, rotaion, scale);
-		m_Model = m_Transform->CalcTransformMatrix();
-	}
-
-	void Renderer::MVP(const std::string& blockName)
-	{
-		m_Model = m_Transform->CalcTransformMatrix();
-		m_View = m_Camera->CalcViewMatrix();
-		m_Projection = m_Camera->CalcProjectionMatrix();
-		if (m_Projection == prevTransforms["projection"] && m_Model == prevTransforms["model"] 
-			&& m_View == prevTransforms["view"])
-		{
-			return;
-		}
-		prevTransforms["projection"] = m_Projection;
-		prevTransforms["model"] = m_Model;
-		prevTransforms["view"] = m_View;
-		glm::mat4 mvp = m_Projection * m_View * m_Model;
-		m_Shader->SetUniformBlockBindingMat4(blockName.c_str(), mvp, 0);
-	}
-
-	void Renderer::SetColor(const std::string& blockName, std::vector<float> color)
-	{
-		m_Shader->SetUniformBlockBindingFloat(blockName.c_str(), color, 1);
-	}
-
-	void Renderer::SetTexture(const char* path, const char* texName, int texSlot, bool invert)
-	{
-		m_Texture = std::make_unique<Texture>(path, invert);
-		m_Texture->Bind(texSlot);
-		m_Shader->SetUniformInt(texName, texSlot);
-	}
-
-	void Renderer::Draw() const
-	{
-		m_VertexArray->Bind();
-		m_Texture->Bind();
-		m_IndexBuffer->Bind();
-		GL_CHECK_ERROR(glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, 0));
 		m_ImguiPanel->DrawImgui();
+		m_Projection = m_Camera->CalcProjectionMatrix();
+		m_View = m_Camera->CalcViewMatrix();
+		for (auto& gpuInstancing : m_GPUInstancings)
+		{
+			gpuInstancing->UpdateMaterial();
+			gpuInstancing->OnUpdate(m_Projection, m_View);
+			gpuInstancing->Draw();
+		}
 	}
 
 	void Renderer::Clear() const
@@ -182,10 +136,5 @@ namespace FluidEngine
 			frameCount = 0;
 			timeElapsed += 1.0f;
 		}
-	}
-
-	void Renderer::Blend(unsigned int src, unsigned int dest) {
-		GL_CHECK_ERROR(glBlendFunc(src, dest));
-		GL_CHECK_ERROR(glEnable(GL_BLEND));
 	}
 }

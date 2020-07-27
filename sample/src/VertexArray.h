@@ -11,6 +11,7 @@ namespace FluidEngine {
         void Bind();
         void Unbind();
         void AddBuffer(BufferLayout& bufferLayout, VertexBuffer& vertexBuffer);
+        void AddBuffer(int startIndex, BufferLayout& bufferLayout, VertexBuffer& vertexBuffer);
     private:
         unsigned int m_RenderID;
     };

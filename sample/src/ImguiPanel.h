@@ -3,7 +3,7 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 #include "Window.h"
-#include "Transform.h"
+#include "Object.h"
 #include "Camera.h"
 #include "OrthogonalCamera.h"
 #include "PerspectiveCamera.h"
@@ -17,7 +17,7 @@ namespace FluidEngine {
 	public:
 		ImGuiPanel(GLFWwindow* window);
 		~ImGuiPanel();
-		void RenderImguiFrame(Window* window, Transform* transform, Camera* camera);
+		void RenderImguiFrame(Window* window, Camera* camera);
 		void DrawImgui();
 	private:
 		const char* m_Glsl_Version = "#version 130";

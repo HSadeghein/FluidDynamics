@@ -1,71 +1,62 @@
 #pragma once
+#include <vector>
 #include <iostream>
 #include <unordered_map>
-//#include "glad/glad.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "VertexArray.h"
-#include "ShaderControler.h"
-#include "BufferLayout.h"
-#include "Texture.h"
-#include "ImguiPanel.h"
-#include "GameTimer.h"
-#include "GeometryGenerator.h"
-#include "Transform.h"
-#include "Camera.h"
-#include "OrthogonalCamera.h"
-#include "PerspectiveCamera.h"
+#include "glad/glad.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "ShaderControler.h"
+#include "ImguiPanel.h"
+#include "GameTimer.h"
+#include "Camera.h"
+#include "Object.h"
+#include "Transform.h"
+#include "Mesh.h"
+#include "Material.h"
+#include "GPUInstancing.h"
+#include "OrthogonalCamera.h"
+#include "PerspectiveCamera.h"
 
-#define ASSERT(x) if(!(x)) __debugbreak();
-#define GL_CHECK_ERROR(x) GlClearErrors();\
-x;\
-ASSERT(GlDisplayError())
+#define ASSERT(x) \
+	if (!(x))     \
+		__debugbreak();
+#define GL_CHECK_ERROR(x) \
+	GlClearErrors();      \
+	x;                    \
+	ASSERT(GlDisplayError())
 
 void GlClearErrors();
 bool GlDisplayError();
 
-namespace FluidEngine {
-	class Renderer {
+namespace FluidEngine
+{
+	class Renderer
+	{
 	public:
-		Renderer(const std::vector<GeometryGenerator::Vertex> vertices, const std::vector<unsigned int> indices, Window* window);
+		Renderer(Window *window);
 		~Renderer();
-		void Draw() const;
+		void Draw();
 		void Clear() const;
 		void Tick();
 		void CalculateFrameStats();
-		void RenderImgui(Window* window);
-		void SetColor(const std::string& blockName, std::vector<float> color);
-		void SetTexture(const char* path, const char* texName, int texSlot, bool invert);
-		const std::vector<float> ConvertVerticesToArray(std::vector<GeometryGenerator::Vertex> vertices) const;
-		void Blend(unsigned int src, unsigned int dest);
-		void Model(const glm::vec3 translation, const glm::vec3 rotaion, const glm::vec3 scale);
+		void RenderImgui(Window *window);
+		std::shared_ptr<Material> CreateMaterial(std::string nameID, std::string vertexShader, std::string pixelShader, std::string texturePath, glm::vec4 color, bool isInstancing);
 		void SetCamera(CameraType cameraType);
 		void SetCamera(CameraType cameraType, float fov, float aspect, float zNear, float zFar);
-		void MVP(const std::string& blockName);
-
-		inline glm::mat4& Projection() { return m_Projection; } 
-		inline glm::mat4& Model()  { return m_Model; } 
-		inline glm::mat4& View() { return m_View; } 
+		void SetUpGPUInstancing(Mesh *mesh, int instanceNumber, std::shared_ptr<Material> material);
+		inline glm::mat4 &Projection() { return m_Projection; }
+		inline glm::mat4 &View() { return m_View; }
 
 		std::unique_ptr<Camera> m_Camera;
 
 	protected:
-		float m_WindowHeight, m_WindowWidth;
+		int m_InstanceNumber;
+		int m_WindowHeight, m_WindowWidth;
 		GameTimer m_Timer;
-		std::unique_ptr<VertexBuffer> m_VertexBuffer;
-		std::unique_ptr<IndexBuffer> m_IndexBuffer;
-		std::unique_ptr<ShaderControler> m_Shader;
-		std::unique_ptr<VertexArray> m_VertexArray;
-		std::unique_ptr<BufferLayout> m_BufferLayout;
-		std::unique_ptr<Texture> m_Texture;
+		std::vector<std::unique_ptr<GPUInstancing>> m_GPUInstancings;
 		std::unique_ptr<ImGuiPanel> m_ImguiPanel;
-		std::unique_ptr<Transform> m_Transform;
-		std::unordered_map<std::string, glm::mat4> prevTransforms;
-		glm::mat4 m_Projection, m_View, m_Model;
+		std::unique_ptr<Camera> m_Camera;
+		std::unordered_map<std::string, std::shared_ptr<Material>> m_Materials;
+		glm::mat4 m_Projection, m_View;
 	};
-}
-
-
-
+} // namespace FluidEngine

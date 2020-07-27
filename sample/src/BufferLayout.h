@@ -1,7 +1,12 @@
 #pragma once
 #include <vector>
-#include<glad/glad.h>
 #include<iostream>
+
+#define GL_FLOAT 0x1406
+#define GL_UNSIGNED_INT 0x1405
+#define GL_UNSIGNED_BYTE 0x1401
+#define GL_FALSE 0
+#define GL_TRUE 1
 
 namespace FluidEngine {
 
@@ -41,6 +46,12 @@ namespace FluidEngine {
         {
             m_Elements.push_back( {count, GL_UNSIGNED_BYTE, GL_TRUE} );
             m_Stride += count * sizeof(unsigned char);
+        }
+
+        void Clear()
+        {
+            m_Elements.clear();
+            m_Stride = 0;
         }
 
         inline const unsigned int GetStride() const{ return m_Stride; }
