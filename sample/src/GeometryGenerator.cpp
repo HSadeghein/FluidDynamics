@@ -100,16 +100,16 @@ namespace FluidEngine
 		MeshData meshData;
 		std::vector<Vertex> vertices;
 		float x, y, z, xy, nx, ny, nz, tx, ty, tz, u, v;
-		float inv_rad = 1 / radius;
+		float inv_rad = 1.0 / radius;
 		float sectorStep = 2 * PI / sectorCount;
 		float stackStep = PI / stackCount;
 		float stackAngle, sectorAngle;
-		for (int i = 0; i < stackCount; i++)
+		for (int i = 0; i <= stackCount; i++)
 		{
 			stackAngle = PI / 2 - stackStep * i;
 			xy = radius * glm::cos(stackAngle);
 			z = radius * glm::sin(stackAngle);
-			for (int j = 0; j < sectorCount; j++)
+			for (int j = 0; j <= sectorCount; j++)
 			{
 				sectorAngle = j * sectorStep;
 				x = xy * glm::cos(sectorAngle);

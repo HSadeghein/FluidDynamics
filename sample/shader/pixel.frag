@@ -21,17 +21,17 @@ layout(location = 0) out vec4 pixel_color;
 void main()
 {
     vec3 norm = normalize(normal);
-    vec3 lightDir = normalize(lightDirection);
+    vec3 lightDir = normalize(lightDirection - worldPos);
     float diff = max(dot(norm, lightDir), 0.0);
 
     vec3 viewDir = normalize(cameraPosition - worldPos);
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    vec3 reflectDir = normalize(reflect(-lightDir, normal));
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 5);
     
     vec4 ambient = lightColor * ambientStrength;
     vec4 diffuse = lightColor * diff;
     vec4 specular = lightColor * spec * specularStrength;
-    vec4 result = _color.color * (ambient);
-    pixel_color =  _color.color;
+    vec4 result = _color.color * (ambient + diffuse + specular);
+    pixel_color =  result;
 }
 

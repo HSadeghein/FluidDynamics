@@ -63,10 +63,10 @@ namespace FluidEngine
 			glFrontFace(GL_CCW);
 			//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-			std::unique_ptr<Mesh> InstancedMesh = std::make_unique<Mesh>(m_GeomGenerator.CreateSphere(10, 5, 5));
+			std::unique_ptr<Mesh> InstancedMesh = std::make_unique<Mesh>(m_GeomGenerator.CreateSphere(5, 50, 50));
 			m_Renderer = std::make_unique<Renderer>(m_Window.get());
 			m_Renderer->SetCamera(CameraType::Perspective, 45, (float)(width / height), 0.01, 1000.0f);
-			m_Renderer->SetLight(glm::vec3(0, 5, -10), glm::vec4(1), 0.1, 0.1);
+			m_Renderer->SetLight(glm::vec3(0, 10, -10), glm::vec4(1), 0.1, 0.5);
 			std::shared_ptr<Material> material1 = std::move(m_Renderer->CreateMaterial("material1", "shader/vertex.vert", "shader/pixel.frag", "", glm::vec4(1), true));
 			m_Renderer->SetUpGPUInstancing(InstancedMesh.get(), 1, material1);
 

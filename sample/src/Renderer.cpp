@@ -54,11 +54,11 @@ namespace FluidEngine
 			m_Materials[nameID]->BindTexture(0);
 		}
 		m_Materials[nameID]->Blend(GL_ONE, GL_ZERO);
-		//m_Materials[nameID]->SetUniformFloat("ambientStrength", m_Light->AmbientStrength());
-		//m_Materials[nameID]->SetUniformFloat("specularStrength", m_Light->SpecularStrength());
-		//m_Materials[nameID]->SetUniformFloat3("lightDirection", m_Light->LightDirection());
-		//m_Materials[nameID]->SetUniformFloat3("cameraPosition", m_Camera->Position());
-		//m_Materials[nameID]->SetUniformFloat4("lightColor", m_Light->LightColor());
+		m_Materials[nameID]->SetUniformFloat("ambientStrength", m_Light->AmbientStrength());
+		m_Materials[nameID]->SetUniformFloat("specularStrength", m_Light->SpecularStrength());
+		m_Materials[nameID]->SetUniformFloat3("lightDirection", m_Light->LightPosition());
+		m_Materials[nameID]->SetUniformFloat3("cameraPosition", m_Camera->Position());
+		m_Materials[nameID]->SetUniformFloat4("lightColor", m_Light->LightColor());
 		return m_Materials[nameID];
 	}
 
