@@ -41,6 +41,9 @@ namespace FluidEngine
 		virtual bool OnWindowClose(WindowClosedEvent& e) = 0;
 		virtual bool OnKeyPressed(KeyPressedEvent& e) = 0;
 		virtual bool OnKeyReleased(KeyReleasedEvent& e) = 0;
+		virtual bool OnLeftMouseButtonPressed(LeftMouseButtonPressed& e) = 0;
+		virtual bool OnRightMouseButtonPressed(RightMouseButtonPressed& e) = 0;
+		virtual bool OnMouseMoved(MouseMoved& e) = 0;
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 
 

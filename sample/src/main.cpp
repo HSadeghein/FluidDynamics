@@ -1,8 +1,10 @@
 #pragma once
+
+
+
+
 #include "pch.h"
 #include <gtest/gtest.h>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include "Log.h"
 
 #include "Application.h"
@@ -17,9 +19,8 @@ int main(int argc, char** argv)
 
 
 
-	FluidEngine::Application app;
-	app.Init(4, 0);
-	app.MainLoop();
+	FluidEngine::Application::Get().Init(4, 0);
+	FluidEngine::Application::Get().MainLoop();
 
 
 

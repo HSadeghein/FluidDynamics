@@ -6,4 +6,3 @@
 #include <functional>
 #include <string>
 #include <sstream>
-

@@ -62,6 +62,26 @@ namespace FluidEngine
 		m_Shader->SetUniformBool(uniformName, value);
 	}
 
+	void Material::SetUniformFloat(const std::string& uniformName, const float value)
+	{
+		m_Shader->SetUniformFloat(uniformName, value);
+	}
+
+	void Material::SetUniformFloat2(const std::string& uniformName, const glm::vec2 value)
+	{
+		m_Shader->SetUniformFloat2(uniformName, value);
+	}
+
+	void Material::SetUniformFloat3(const std::string& uniformName, const glm::vec3 value)
+	{
+		m_Shader->SetUniformFloat3(uniformName, value);
+	}
+
+	void Material::SetUniformFloat4(const std::string& uniformName, const glm::vec4 value)
+	{
+		m_Shader->SetUniformFloat4(uniformName, value);
+	}
+
 	void Material::BindTexture(unsigned int slot)
 	{
 		m_Texture->Bind(slot);

@@ -18,6 +18,10 @@ namespace FluidEngine
 		void SetColor(const std::string& blockName, std::vector<float> color);
 		void SetUniformMat4(const std::string& uniformName, const glm::mat4 matrix);
 		void SetUniformBool(const std::string& uniformName, const bool value);
+		void SetUniformFloat(const std::string& uniformName, const float value);
+		void SetUniformFloat2(const std::string& uniformName, const glm::vec2 value);
+		void SetUniformFloat3(const std::string& uniformName, const glm::vec3 value);
+		void SetUniformFloat4(const std::string& uniformName, const glm::vec4 value);
 		void BindTexture(unsigned int slot = 0);
 		void GetRenderID();
 

@@ -29,6 +29,10 @@ namespace FluidEngine {
 		void SetUniformInt(const char* name, int value);
 		void SetUniformMat4(const char* name, glm::mat4 value);
 		void SetUniformBool(const std::string& uniformName, const bool value);
+		void SetUniformFloat(const std::string& uniformName, const float value);
+		void SetUniformFloat2(const std::string& uniformName, const glm::vec2 value);
+		void SetUniformFloat3(const std::string& uniformName, const glm::vec3 value);
+		void SetUniformFloat4(const std::string& uniformName, const glm::vec4 value);
 		int GetUniformBlockIndex(std::string blockName);
 		int GetUniformLocation(std::string blockName);
 		inline int RenderID() { return m_RenderID; }

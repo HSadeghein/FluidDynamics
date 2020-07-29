@@ -3,8 +3,6 @@
 #include <vector>
 #include "Texture.h"
 
-
-
 void GlClearErrors()
 {
 	while (glGetError() != GL_NO_ERROR);
@@ -56,6 +54,11 @@ namespace FluidEngine
 			m_Materials[nameID]->BindTexture(0);
 		}
 		m_Materials[nameID]->Blend(GL_ONE, GL_ZERO);
+		//m_Materials[nameID]->SetUniformFloat("ambientStrength", m_Light->AmbientStrength());
+		//m_Materials[nameID]->SetUniformFloat("specularStrength", m_Light->SpecularStrength());
+		//m_Materials[nameID]->SetUniformFloat3("lightDirection", m_Light->LightDirection());
+		//m_Materials[nameID]->SetUniformFloat3("cameraPosition", m_Camera->Position());
+		//m_Materials[nameID]->SetUniformFloat4("lightColor", m_Light->LightColor());
 		return m_Materials[nameID];
 	}
 
@@ -96,6 +99,11 @@ namespace FluidEngine
 			std::cout << "Wrong Camera Type" << std::endl;
 			ASSERT(false);
 		}
+	}
+
+	void Renderer::SetLight(glm::vec3 position, glm::vec4 color, float ambientStrength, float specularStrength)
+	{
+		m_Light = std::make_unique<Light>(position, color, ambientStrength, specularStrength);
 	}
 
 	void Renderer::Draw()

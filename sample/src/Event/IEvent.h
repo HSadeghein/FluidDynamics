@@ -9,6 +9,8 @@ namespace FluidEngine
 		MouseMoved,
 		LeftMouseClicked,
 		RightMouseClicked,
+		LeftMouseReleased,
+		RightMouseReleased,
 		KeyPressed,
 		KeyReleased,
 		WindowSizeChanged,
