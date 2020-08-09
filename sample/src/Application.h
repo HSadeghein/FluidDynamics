@@ -8,9 +8,9 @@
 #include "Event/IEvent.h"
 #include "Renderer.h"
 #include "GeometryGenerator.h"
-
+#include <glm/gtx/vector_angle.hpp>
 #include "Window.h"
-
+#include <cmath>
 namespace FluidEngine
 {
 	class Window;
@@ -45,8 +45,49 @@ namespace FluidEngine
 		static Application* m_AppInstance;
 		int m_GlfwMinorVersion = 0;
 		int m_GlfwMajorVersion = 4;
+		glm::vec2 m_LastMousePos;
+		float m_Theta = 1.5f * glm::pi<float>();
+		float m_Phi = .2f * glm::pi<float>();
+		float m_Radius = 50.0f;
+
+		float m_HorizentalAngle = 0.0f;
+		float m_VerticalAngle = 0.0f;
 
 		GeometryGenerator m_GeomGenerator;
+
+
+		void OnEvent(IEvent& e);
+
+
+		bool OnWindowSizeChanged(WindowSizeChangedEvent& e);
+
+		bool OnWindowClose(WindowClosedEvent& e);
+
+		bool OnKeyPressed(KeyPressedEvent& e);
+
+		bool OnKeyReleased(KeyReleasedEvent& e);
+
+		bool OnKeyRepeated(KeyRepeatedEvent& e);
+
+		bool OnRightMouseButtonPressed(RightMouseButtonPressed& e);
+
+		bool OnLeftMouseButtonPressed(LeftMouseButtonPressed& e);
+
+		bool OnLeftMouseButtonReleased(LeftMouseButtonReleased& e);
+
+		bool OnRightMouseButtonReleased(RightMouseButtonReleased& e);
+
+		bool OnMouseMoved(MouseMoved& e);
+
+
+
+
+
+
+
+		bool m_LeftMouseButtonClikced = false;
+		bool m_RightMouseButtonClikced = false;
+		glm::vec3 m_EyePos = glm::vec3(0, 0, -50.0f);
 
 	};
 }

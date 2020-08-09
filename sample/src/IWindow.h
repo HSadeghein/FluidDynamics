@@ -36,14 +36,14 @@ namespace FluidEngine
 		virtual int GetWidth() const = 0;
 		virtual void SetWindowSize(int width, int height) = 0;
 		virtual void OnUpdate() = 0;
-		virtual void OnEvent(IEvent& e) = 0;
-		virtual bool OnWindowSizeChanged(WindowSizeChangedEvent& e) = 0;
-		virtual bool OnWindowClose(WindowClosedEvent& e) = 0;
-		virtual bool OnKeyPressed(KeyPressedEvent& e) = 0;
-		virtual bool OnKeyReleased(KeyReleasedEvent& e) = 0;
-		virtual bool OnLeftMouseButtonPressed(LeftMouseButtonPressed& e) = 0;
-		virtual bool OnRightMouseButtonPressed(RightMouseButtonPressed& e) = 0;
-		virtual bool OnMouseMoved(MouseMoved& e) = 0;
+		//virtual void OnEvent(IEvent& e) = 0;
+		//virtual bool OnWindowSizeChanged(WindowSizeChangedEvent& e) = 0;
+		//virtual bool OnWindowClose(WindowClosedEvent& e) = 0;
+		//virtual bool OnKeyPressed(KeyPressedEvent& e) = 0;
+		//virtual bool OnKeyReleased(KeyReleasedEvent& e) = 0;
+		//virtual bool OnLeftMouseButtonPressed(LeftMouseButtonPressed& e) = 0;
+		//virtual bool OnRightMouseButtonPressed(RightMouseButtonPressed& e) = 0;
+		//virtual bool OnMouseMoved(MouseMoved& e) = 0;
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 
 

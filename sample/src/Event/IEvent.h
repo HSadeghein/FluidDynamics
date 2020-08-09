@@ -13,6 +13,7 @@ namespace FluidEngine
 		RightMouseReleased,
 		KeyPressed,
 		KeyReleased,
+		KeyRepeated,
 		WindowSizeChanged,
 		WindowClosed
 

@@ -27,7 +27,9 @@ namespace FluidEngine
 		m_WindowWidth = window->GetWidth();
 		m_WindowHeight = window->GetHeight();
 		m_ImguiPanel = std::make_unique<ImGuiPanel>(window->GetWindow());
-		m_Timer.Reset();
+		m_Timer = GameTimer::GetReference();
+		m_Timer->Reset();
+
 	}
 
 	Renderer::~Renderer()
@@ -69,7 +71,7 @@ namespace FluidEngine
 			float width = m_WindowWidth;
 			float height = m_WindowHeight;
 			m_Camera = std::make_unique<OrthogonalCamera>(glm::vec3(0), cameraType, -width / 2, width / 2,
-				-height / 2, height / 2);
+														  -height / 2, height / 2);
 			m_View = m_Camera->CalcViewMatrix();
 			m_Projection = m_Camera->CalcProjectionMatrix();
 		}
@@ -97,7 +99,6 @@ namespace FluidEngine
 
 	void Renderer::Draw()
 	{
-		m_ImguiPanel->DrawImgui();
 		m_Projection = m_Camera->CalcProjectionMatrix();
 		m_View = m_Camera->CalcViewMatrix();
 		for (auto& gpuInstancing : m_GPUInstancings)
@@ -106,6 +107,8 @@ namespace FluidEngine
 			gpuInstancing->OnUpdate(m_Projection, m_View);
 			gpuInstancing->Draw();
 		}
+		m_ImguiPanel->DrawImgui();
+
 	}
 
 	void Renderer::Clear() const
@@ -115,7 +118,7 @@ namespace FluidEngine
 
 	void Renderer::Tick()
 	{
-		m_Timer.Tick();
+		m_Timer->Tick();
 	}
 
 	void Renderer::CalculateFrameStats()
@@ -125,7 +128,7 @@ namespace FluidEngine
 
 		frameCount++;
 
-		if ((m_Timer.TotalTime() - timeElapsed) >= 1.0f)
+		if ((m_Timer->TotalTime() - timeElapsed) >= 1.0f)
 		{
 			float fps = (float)frameCount;
 			float mspf = 1000.0f / fps;

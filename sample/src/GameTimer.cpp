@@ -3,6 +3,9 @@
 #include <profileapi.h>
 namespace FluidEngine
 {
+
+	GameTimer* GameTimer::m_Timer = nullptr;
+
 	GameTimer::GameTimer() : m_SecondsPerCount(0), m_DeltaTime(-1.0), m_BaseTime(0), m_StopTime(0),
 		m_PausedTime(0), m_PrevTime(0), m_CurrTime(0), m_Stopped(false)
 	{
@@ -10,6 +13,15 @@ namespace FluidEngine
 		QueryPerformanceFrequency((LARGE_INTEGER*)&countsPerSecond);
 		m_SecondsPerCount = 1.0 / (double)countsPerSecond;
 
+	}
+
+	GameTimer* GameTimer::GetReference()
+	{
+		if (m_Timer == nullptr)
+		{
+			m_Timer = new GameTimer();
+		}
+		return m_Timer;
 	}
 	void GameTimer::Tick()
 	{

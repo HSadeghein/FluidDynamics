@@ -28,7 +28,7 @@ namespace FluidEngine
 
 		for (int i = 0; i < instanceNumber; i++)
 		{
-			Transform transform(glm::vec3(-15 * i, 0, 0), glm::vec3(0.0), glm::vec3(1.0));
+			Transform transform(glm::vec3(i * 10, 0, 0), glm::vec3(0.0), glm::vec3(1.0));
 			m_Worlds.push_back(transform.CalcTransformMatrix());
 		}
 		auto& vertices = mesh->Vertices();

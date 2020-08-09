@@ -46,12 +46,13 @@ namespace FluidEngine
 		void SetUpGPUInstancing(Mesh *mesh, int instanceNumber, std::shared_ptr<Material> material);
 		inline glm::mat4 &Projection() { return m_Projection; }
 		inline glm::mat4 &View() { return m_View; }
+		inline Camera* GetCamera() { return m_Camera.get(); }
 
 
 	protected:
 		int m_InstanceNumber;
 		int m_WindowHeight, m_WindowWidth;
-		GameTimer m_Timer;
+		GameTimer* m_Timer;
 		std::vector<std::unique_ptr<GPUInstancing>> m_GPUInstancings;
 		std::unique_ptr<ImGuiPanel> m_ImguiPanel;
 		std::unique_ptr<Camera> m_Camera;

@@ -26,9 +26,10 @@ namespace FluidEngine
 		ImGui::NewFrame();
 		
 		{
-			static glm::vec3 positionCamera = glm::vec3(0, 0, -50);
-			static glm::vec3 rotationCamera = glm::vec3(0.0);
-			static float fov = 45;
+			ImGui::Begin("Window");
+			glm::vec3 positionCamera = camera->GetCameraPosition();
+			glm::vec3 rotationCamera = glm::vec3(0.0);
+			float fov = 45;
 
 			if (camera->GetCameraType() == CameraType::Orthogonal)
 			{
@@ -38,6 +39,7 @@ namespace FluidEngine
 			}
 			else if (camera->GetCameraType() == CameraType::Perspective)
 			{
+				rotationCamera = static_cast<PerspectiveCamera*>(camera)->Rotation();
 				ImGui::Text("Perspective Camera : ");
 				ImGui::InputFloat3("Camera Position", &positionCamera[0]);
 				ImGui::InputFloat3("Camera Rotation", &rotationCamera[0]);
@@ -60,9 +62,9 @@ namespace FluidEngine
 			//	transform->SetRotation(rotation);
 			//	transform->SetScale(scale);
 			//}
+			ImGui::End();
 		}
-
-		ImGui::Render();
+		ImGui::EndFrame();
 		glfwGetFramebufferSize(window->GetWindow(), &display_w, &display_h);
 		glViewport(0, 0, display_w, display_h);
 		glClearColor(m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, m_ClearColor.w);
@@ -70,6 +72,7 @@ namespace FluidEngine
 
 	void ImGuiPanel::DrawImgui()
 	{
+		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 } // namespace FluidEngine
