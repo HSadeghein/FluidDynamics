@@ -95,6 +95,63 @@ namespace FluidEngine
 		return meshData;
 	}
 
+	GeometryGenerator::MeshData GeometryGenerator::CreateSphere(float radius, int stackCount, int sectorCount)
+	{
+		MeshData meshData;
+		std::vector<Vertex> vertices;
+		float x, y, z, xy, nx, ny, nz, tx, ty, tz, u, v;
+		float inv_rad = 1.0 / radius;
+		float sectorStep = 2 * PI / sectorCount;
+		float stackStep = PI / stackCount;
+		float stackAngle, sectorAngle;
+		for (int i = 0; i <= stackCount; i++)
+		{
+			stackAngle = PI / 2 - stackStep * i;
+			xy = radius * glm::cos(stackAngle);
+			z = radius * glm::sin(stackAngle);
+			for (int j = 0; j <= sectorCount; j++)
+			{
+				sectorAngle = j * sectorStep;
+				x = xy * glm::cos(sectorAngle);
+				y = xy * glm::sin(sectorAngle);
+				nx = x * inv_rad;
+				ny = y * inv_rad;
+				nz = z * inv_rad;
+				tx = glm::sin(sectorAngle) * glm::cos(stackAngle);
+				ty = glm::sin(sectorAngle) * glm::sin(stackAngle);
+				tz = glm::cos(sectorAngle);
+				v = (float)i / stackCount;
+				u = (float)j / sectorCount;
+				vertices.push_back(Vertex(glm::vec3(x, y, z), glm::vec3(nx, ny, nz), glm::vec3(0), glm::vec2(u, v)));
+			}
+		}
+		meshData.Vertices.assign(vertices.begin(), vertices.end());
+		std::vector<int> indices;
+		int k1, k2;
+		for (int i = 0; i < stackCount; i++)
+		{
+			k1 = i * (sectorCount + 1);
+			k2 = k1 + sectorCount + 1;
+			for (int j = 0; j < sectorCount; j++, k1++, k2++)
+			{
+				if (i != 0) 
+				{
+					indices.push_back(k1);
+					indices.push_back(k2);
+					indices.push_back(k1 + 1);
+				}
+				if (i != (sectorCount - 1))
+				{
+					indices.push_back(k1 + 1);
+					indices.push_back(k2);
+					indices.push_back(k2 + 1);
+				}
+			}
+		}
+		meshData.Indices.assign(indices.begin(), indices.end());
+		return meshData;
+	}
+
 	void GeometryGenerator::Subdivide(MeshData& meshData)
 	{
 		//				v1
@@ -106,7 +163,7 @@ namespace FluidEngine
 		//		  v0----m2----v2
 
 
-
+		std::cout << "HI";
 		MeshData meshDataCopy = meshData;
 
 		meshData.Vertices.resize(0);

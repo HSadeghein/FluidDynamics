@@ -141,6 +141,30 @@ namespace FluidEngine {
 		GL_CHECK_ERROR(glUniform1i(location, value));
 	}
 
+	void ShaderControler::SetUniformFloat(const std::string& uniformName, const float value)
+	{
+		int location = GetUniformLocation(uniformName);
+		GL_CHECK_ERROR(glUniform1f(location, value));
+	}
+
+	void ShaderControler::SetUniformFloat2(const std::string& uniformName, const glm::vec2 value)
+	{
+		int location = GetUniformLocation(uniformName);
+		GL_CHECK_ERROR(glUniform2f(location, value.x, value.y));
+	}
+
+	void ShaderControler::SetUniformFloat3(const std::string& uniformName, const glm::vec3 value)
+	{
+		int location = GetUniformLocation(uniformName);
+		GL_CHECK_ERROR(glUniform3f(location, value.x, value.y, value.z));
+	}
+
+	void ShaderControler::SetUniformFloat4(const std::string& uniformName, const glm::vec4 value)
+	{
+		int location = GetUniformLocation(uniformName);
+		GL_CHECK_ERROR(glUniform4f(location, value.x, value.y, value.z, value.w));
+	}
+
 	int ShaderControler::GetUniformBlockIndex(std::string blockName)
 	{
 		if(uniformBlockCache.find(blockName) != uniformBlockCache.end())

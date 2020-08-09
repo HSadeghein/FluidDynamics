@@ -6,7 +6,7 @@ namespace FluidEngine {
 		~UniformBuffer();
 
 		void Bind(const float* data, int size, unsigned int binding);
-		void Unbind();
+		void Unbind(unsigned int binding);
 	private:
 		unsigned int m_RenderID;
 	};

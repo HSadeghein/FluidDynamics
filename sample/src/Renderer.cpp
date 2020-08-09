@@ -3,8 +3,6 @@
 #include <vector>
 #include "Texture.h"
 
-
-
 void GlClearErrors()
 {
 	while (glGetError() != GL_NO_ERROR);
@@ -52,9 +50,17 @@ namespace FluidEngine
 		m_Materials[nameID]->RunShader();
 		m_Materials[nameID]->SetInstancing(isInstancing);
 		m_Materials[nameID]->SetColor(color);
-		m_Materials[nameID]->SetTexture(texturePath.c_str(), "_sampler", 0, false);
+		if (texturePath != "")
+		{
+			m_Materials[nameID]->SetTexture(texturePath.c_str(), "_sampler", 0, false);
+			m_Materials[nameID]->BindTexture(0);
+		}
 		m_Materials[nameID]->Blend(GL_ONE, GL_ZERO);
-		m_Materials[nameID]->BindTexture(0);
+		m_Materials[nameID]->SetUniformFloat("ambientStrength", m_Light->AmbientStrength());
+		m_Materials[nameID]->SetUniformFloat("specularStrength", m_Light->SpecularStrength());
+		m_Materials[nameID]->SetUniformFloat3("lightDirection", m_Light->LightPosition());
+		m_Materials[nameID]->SetUniformFloat3("cameraPosition", m_Camera->Position());
+		m_Materials[nameID]->SetUniformFloat4("lightColor", m_Light->LightColor());
 		return m_Materials[nameID];
 	}
 
@@ -97,6 +103,11 @@ namespace FluidEngine
 		}
 	}
 
+	void Renderer::SetLight(glm::vec3 position, glm::vec4 color, float ambientStrength, float specularStrength)
+	{
+		m_Light = std::make_unique<Light>(position, color, ambientStrength, specularStrength);
+	}
+
 	void Renderer::Draw()
 	{
 		m_Projection = m_Camera->CalcProjectionMatrix();
@@ -108,7 +119,6 @@ namespace FluidEngine
 			gpuInstancing->Draw();
 		}
 		m_ImguiPanel->DrawImgui();
-
 	}
 
 	void Renderer::Clear() const
@@ -132,10 +142,8 @@ namespace FluidEngine
 		{
 			float fps = (float)frameCount;
 			float mspf = 1000.0f / fps;
-
 			Log::GetCoreLogger()->info("FPS is {}", fps);
 			Log::GetCoreLogger()->info("Frame per milisecond is {}", mspf);
-
 			frameCount = 0;
 			timeElapsed += 1.0f;
 		}
