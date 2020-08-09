@@ -26,9 +26,9 @@ namespace FluidEngine
 		ImGui::NewFrame();
 		
 		{
-			static glm::vec3 positionCamera = glm::vec3(0, 0, -50);
-			static glm::vec3 rotationCamera = glm::vec3(0.0);
-			static float fov = 45;
+			glm::vec3 positionCamera = glm::vec3(0, 0, -50);
+		    glm::vec3 rotationCamera = glm::vec3(0.0);
+		    float fov = 45;
 
 			if (camera->GetCameraType() == CameraType::Orthogonal)
 			{
@@ -46,20 +46,6 @@ namespace FluidEngine
 				dynamic_cast<PerspectiveCamera*>(camera)->SetFOV(fov);
 				dynamic_cast<PerspectiveCamera*>(camera)->SetRotation(rotationCamera);
 			}
-			//for (auto& object : objects)
-			//{
-			//	auto transform = object->GetTransform();
-			//static glm::vec3 position = glm::vec3(0.0);
-			//static glm::vec3 rotation = glm::vec3(0.0);
-			//static glm::vec3 scale = glm::vec3(1.0);
-			//	ImGui::Text(("Transform " + object->GetName() + ": ").c_str());
-			//	ImGui::InputFloat3(("Position##" + object->GetName()).c_str(), &position[0]);
-			//	ImGui::InputFloat3(("Rotation##" + object->GetName()).c_str(), &rotation[0]);
-			//	ImGui::InputFloat3(("Scale##" + object->GetName()).c_str(), &scale[0]);
-			//	transform->SetPosition(position);
-			//	transform->SetRotation(rotation);
-			//	transform->SetScale(scale);
-			//}
 		}
 
 		ImGui::Render();

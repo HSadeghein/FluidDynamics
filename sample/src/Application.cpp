@@ -68,7 +68,7 @@ namespace FluidEngine
 			m_Renderer->SetCamera(CameraType::Perspective, 45, (float)(width / height), 0.01, 1000.0f);
 			m_Renderer->SetLight(glm::vec3(0, 10, -10), glm::vec4(1), 0.1, 0.5);
 			std::shared_ptr<Material> material1 = std::move(m_Renderer->CreateMaterial("material1", "shader/vertex.vert", "shader/pixel.frag", "", glm::vec4(1), true));
-			m_Renderer->SetUpGPUInstancing(InstancedMesh.get(), 1, material1);
+			m_Renderer->SetUpGPUInstancing(InstancedMesh.get(), 10, material1);
 
 			while (!glfwWindowShouldClose(m_Window->GetWindow()))
 			{
