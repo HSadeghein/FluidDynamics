@@ -141,6 +141,28 @@ namespace FluidEngine
 
 	};
 
+	class KeyRepeatedEvent : public KeyEvent
+	{
+	public:
+		KeyRepeatedEvent(KeyCodes keyCode) : KeyEvent(keyCode)
+		{
+			type = EventTypes::KeyRepeated;
+		}
+
+		EventTypes GetEventType() const override
+		{
+			return type;
+		}
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "Key Repeated Event :" << m_KeyCode << "\n";
+			return ss.str();
+		}
+		EVENT_CLASS_TYPE(KeyRepeated)
+	};
+
 	class EventTick : public IEvent
 	{
 	public:
@@ -239,7 +261,7 @@ namespace FluidEngine
 	class MouseMoved : public IEvent
 	{
 	public:
-		MouseMoved(double xPos, double yPos) : m_XPos(xPos), m_YPos(yPos)
+		MouseMoved(int xPos, int yPos) : m_XPos(xPos), m_YPos(yPos)
 		{
 			type = EventTypes::MouseMoved;
 		}
@@ -253,11 +275,13 @@ namespace FluidEngine
 			ss << "Mouse Moved --> X:" << m_XPos << "\t" << "Y:" << m_YPos << "\n";
 			return ss.str();
 		}
+		int GetX() { return m_XPos; }
+		int GetY() { return m_YPos; }
 
 		EVENT_CLASS_TYPE(MouseMoved)
 
 	private:
-		double m_XPos;
-		double m_YPos;
+		int m_XPos;
+		int m_YPos;
 	};
 }

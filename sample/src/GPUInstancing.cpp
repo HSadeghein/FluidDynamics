@@ -28,7 +28,7 @@ namespace FluidEngine
 
 		for (int i = 0; i < instanceNumber; i++)
 		{
-			Transform transform(glm::vec3(-15 * i, 0, 0), glm::vec3(0.0), glm::vec3(1.0));
+			Transform transform(glm::vec3(i * 20, 0, 0), glm::vec3(0.0), glm::vec3(1.0));
 			m_Worlds.push_back(transform.CalcTransformMatrix());
 		}
 		auto& vertices = mesh->Vertices();
@@ -51,12 +51,13 @@ namespace FluidEngine
 		m_Material->SetUniformMat4("view", view);
 	}
 
-	void GPUInstancing::UpdateMaterial()
+	void GPUInstancing::UpdateMaterial(glm::vec3 cameraPosition)
 	{
 		m_Material->RunShader();
 		glm::vec4 color = m_Material->Color();
 		m_Material->SetColor("ColorBuffers", std::vector<float>{color.r, color.g, color.b, color.a});
 		m_Material->SetUniformBool("isInstancing", m_Material->IsInstancing());
+		m_Material->SetUniformFloat3("cameraPosition", cameraPosition);
 	}
 
 	void GPUInstancing::Draw()

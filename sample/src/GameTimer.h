@@ -14,8 +14,7 @@ namespace FluidEngine
 	class GameTimer
 	{
 	public:
-		GameTimer();
-
+		GameTimer(GameTimer& other) = delete;
 		//in seconds
 		float TotalTime() const;
 		float DeltaTime() const;
@@ -25,9 +24,15 @@ namespace FluidEngine
 		void Stop();
 		void Tick();
 
+		static GameTimer* GetReference();
+
 	private:
 		double m_SecondsPerCount;
 		double m_DeltaTime;
+		static GameTimer* m_Timer;
+
+
+		GameTimer();
 
 
 		//Microsoft visual C++ based

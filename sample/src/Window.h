@@ -35,27 +35,26 @@ namespace FluidEngine
 		void OnUpdate() override;
 		GLFWwindow* GetWindow();
 
-		void RegisterApplication(std::shared_ptr<Application> application);
 
 		void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallBack = callback; };
 
 
-		void OnEvent(IEvent& e) override;
+		//void OnEvent(IEvent& e) override;
 
 
-		bool OnWindowSizeChanged(WindowSizeChangedEvent& e) override;
+		//bool OnWindowSizeChanged(WindowSizeChangedEvent& e) override;
 
-		bool OnWindowClose(WindowClosedEvent& e) override;
+		//bool OnWindowClose(WindowClosedEvent& e) override;
 
-		bool OnKeyPressed(KeyPressedEvent& e) override;
+		//bool OnKeyPressed(KeyPressedEvent& e) override;
 
-		bool OnKeyReleased(KeyReleasedEvent& e) override;
+		//bool OnKeyReleased(KeyReleasedEvent& e) override;
 
-		bool OnRightMouseButtonPressed(RightMouseButtonPressed& e) override;
+		//bool OnRightMouseButtonPressed(RightMouseButtonPressed& e) override;
 
-		bool OnLeftMouseButtonPressed(LeftMouseButtonPressed& e) override;
+		//bool OnLeftMouseButtonPressed(LeftMouseButtonPressed& e) override;
 
-		bool OnMouseMoved(MouseMoved& e) override;
+		//bool OnMouseMoved(MouseMoved& e) override;
 
 	protected:
 		void Terminate();

@@ -15,7 +15,7 @@ namespace FluidEngine
 		GPUInstancing(int instanceNumber, Mesh* mesh, std::shared_ptr<Material> material);
 		~GPUInstancing();
 		void OnUpdate(glm::mat4 projection, glm::mat4 view);
-		void UpdateMaterial();
+		void UpdateMaterial(glm::vec3 cameraPosition);
 		void Draw();
 
 	private:

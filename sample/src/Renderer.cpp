@@ -25,12 +25,21 @@ namespace FluidEngine
 		m_WindowWidth = window->GetWidth();
 		m_WindowHeight = window->GetHeight();
 		m_ImguiPanel = std::make_unique<ImGuiPanel>(window->GetWindow());
-		m_Timer.Reset();
+		m_Timer = GameTimer::GetReference();
+		m_Timer->Reset();
 	}
 
 	Renderer::~Renderer()
 	{
 		std::cout << "Renderer is destroyed" << std::endl;
+	}
+
+	void Renderer::Init()
+	{
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CCW);
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	void Renderer::RenderImgui(Window* window)
@@ -56,7 +65,7 @@ namespace FluidEngine
 		m_Materials[nameID]->Blend(GL_ONE, GL_ZERO);
 		m_Materials[nameID]->SetUniformFloat("ambientStrength", m_Light->AmbientStrength());
 		m_Materials[nameID]->SetUniformFloat("specularStrength", m_Light->SpecularStrength());
-		m_Materials[nameID]->SetUniformFloat3("lightDirection", m_Light->LightPosition());
+		m_Materials[nameID]->SetUniformFloat3("lightPosition", m_Light->LightPosition());
 		m_Materials[nameID]->SetUniformFloat3("cameraPosition", m_Camera->Position());
 		m_Materials[nameID]->SetUniformFloat4("lightColor", m_Light->LightColor());
 		return m_Materials[nameID];
@@ -75,7 +84,7 @@ namespace FluidEngine
 			float width = m_WindowWidth;
 			float height = m_WindowHeight;
 			m_Camera = std::make_unique<OrthogonalCamera>(glm::vec3(0), cameraType, -width / 2, width / 2,
-				-height / 2, height / 2);
+														  -height / 2, height / 2);
 			m_View = m_Camera->CalcViewMatrix();
 			m_Projection = m_Camera->CalcProjectionMatrix();
 		}
@@ -108,12 +117,11 @@ namespace FluidEngine
 
 	void Renderer::Draw()
 	{
-		
 		m_Projection = m_Camera->CalcProjectionMatrix();
 		m_View = m_Camera->CalcViewMatrix();
 		for (auto& gpuInstancing : m_GPUInstancings)
 		{
-			gpuInstancing->UpdateMaterial();
+			gpuInstancing->UpdateMaterial(m_Camera->Position());
 			gpuInstancing->OnUpdate(m_Projection, m_View);
 			gpuInstancing->Draw();
 		}
@@ -122,12 +130,12 @@ namespace FluidEngine
 
 	void Renderer::Clear() const
 	{
-		GL_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
+		GL_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 	}
 
 	void Renderer::Tick()
 	{
-		m_Timer.Tick();
+		m_Timer->Tick();
 	}
 
 	void Renderer::CalculateFrameStats()
@@ -137,7 +145,7 @@ namespace FluidEngine
 
 		frameCount++;
 
-		if ((m_Timer.TotalTime() - timeElapsed) >= 1.0f)
+		if ((m_Timer->TotalTime() - timeElapsed) >= 1.0f)
 		{
 			float fps = (float)frameCount;
 			float mspf = 1000.0f / fps;

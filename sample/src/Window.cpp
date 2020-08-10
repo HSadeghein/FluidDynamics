@@ -101,6 +101,8 @@ namespace FluidEngine
 							   }
 							   case GLFW_REPEAT:
 							   {
+								   KeyRepeatedEvent e(static_cast<KeyCodes>(key));
+								   data.EventCallBack(e);
 								   break;
 							   }
 							   default:
@@ -146,10 +148,6 @@ namespace FluidEngine
 
 	}
 
-	void Window::RegisterApplication(std::shared_ptr<Application> application)
-	{
-		m_Application = application;
-	}
 
 	void Window::SetWidth(int width)
 	{
@@ -188,72 +186,72 @@ namespace FluidEngine
 		return m_Window;
 	}
 
-	void Window::OnEvent(IEvent& e)
-	{
-		EventDispatcher dispatcher(e);
+	//void Window::OnEvent(IEvent& e)
+	//{
+	//	EventDispatcher dispatcher(e);
 
-		dispatcher.Dispatch<WindowSizeChangedEvent>(std::bind(&Window::OnWindowSizeChanged, this, std::placeholders::_1));
-		dispatcher.Dispatch<WindowClosedEvent>(std::bind(&Window::OnWindowClose, this, std::placeholders::_1));
-		dispatcher.Dispatch<KeyPressedEvent>(std::bind(&Window::OnKeyPressed, this, std::placeholders::_1));
-		dispatcher.Dispatch<KeyReleasedEvent>(std::bind(&Window::OnKeyReleased, this, std::placeholders::_1));
-		dispatcher.Dispatch<LeftMouseButtonPressed>(std::bind(&Window::OnLeftMouseButtonPressed, this, std::placeholders::_1));
-		dispatcher.Dispatch<RightMouseButtonPressed>(std::bind(&Window::OnRightMouseButtonPressed, this, std::placeholders::_1));
-		dispatcher.Dispatch<MouseMoved>(std::bind(&Window::OnMouseMoved, this, std::placeholders::_1));
+	//	dispatcher.Dispatch<WindowSizeChangedEvent>(std::bind(&Window::OnWindowSizeChanged, this, std::placeholders::_1));
+	//	dispatcher.Dispatch<WindowClosedEvent>(std::bind(&Window::OnWindowClose, this, std::placeholders::_1));
+	//	dispatcher.Dispatch<KeyPressedEvent>(std::bind(&Window::OnKeyPressed, this, std::placeholders::_1));
+	//	dispatcher.Dispatch<KeyReleasedEvent>(std::bind(&Window::OnKeyReleased, this, std::placeholders::_1));
+	//	dispatcher.Dispatch<LeftMouseButtonPressed>(std::bind(&Window::OnLeftMouseButtonPressed, this, std::placeholders::_1));
+	//	dispatcher.Dispatch<RightMouseButtonPressed>(std::bind(&Window::OnRightMouseButtonPressed, this, std::placeholders::_1));
+	//	dispatcher.Dispatch<MouseMoved>(std::bind(&Window::OnMouseMoved, this, std::placeholders::_1));
 
-	}
+	//}
 
-	bool Window::OnWindowSizeChanged(WindowSizeChangedEvent& e)
-	{
+	//bool Window::OnWindowSizeChanged(WindowSizeChangedEvent& e)
+	//{
 
-		glViewport(0, 0, e.GetWdith(), e.GetHeight());
-		return true;
-	}
+	//	glViewport(0, 0, e.GetWdith(), e.GetHeight());
+	//	return true;
+	//}
 
-	bool Window::OnWindowClose(WindowClosedEvent& e)
-	{
-		glfwSetWindowShouldClose(m_Window, 1);
-		Log::GetCoreLogger()->info("Window closed");
-		return true;
-	}
+	//bool Window::OnWindowClose(WindowClosedEvent& e)
+	//{
+	//	glfwSetWindowShouldClose(m_Window, 1);
+	//	Log::GetCoreLogger()->info("Window closed");
+	//	return true;
+	//}
 
-	bool Window::OnKeyPressed(KeyPressedEvent& e)
-	{
-		Log::GetCoreLogger()->info(e.ToString());
-		if (e.GetKeyCode() == KeyCodes::Escape)
-		{
-			WindowClosedEvent closedEvent;
-			OnWindowClose(closedEvent);
-		}
-		return true;
-	}
+	//bool Window::OnKeyPressed(KeyPressedEvent& e)
+	//{
+	//	Log::GetCoreLogger()->info(e.ToString());
+	//	if (e.GetKeyCode() == KeyCodes::Escape)
+	//	{
+	//		WindowClosedEvent closedEvent;
+	//		OnWindowClose(closedEvent);
+	//	}
+	//	return true;
+	//}
 
-	bool Window::OnKeyReleased(KeyReleasedEvent& e)
-	{
-		Log::GetCoreLogger()->info(e.ToString());
-		return true;
-	}
+	//bool Window::OnKeyReleased(KeyReleasedEvent& e)
+	//{
+	//	Log::GetCoreLogger()->info(e.ToString());
+	//	return true;
+	//}
 
-	bool Window::OnRightMouseButtonPressed(RightMouseButtonPressed& e)
-	{
-		Log::GetCoreLogger()->info(e.ToString());
-		return true;
-	}
+	//bool Window::OnRightMouseButtonPressed(RightMouseButtonPressed& e)
+	//{
+	//	Log::GetCoreLogger()->info(e.ToString());
+	//	return true;
+	//}
 
-	bool Window::OnLeftMouseButtonPressed(LeftMouseButtonPressed& e)
-	{
-		Log::GetCoreLogger()->info(e.ToString());
-		return true;
-	}
+	//bool Window::OnLeftMouseButtonPressed(LeftMouseButtonPressed& e)
+	//{
+	//	Log::GetCoreLogger()->info(e.ToString());
+	//	return true;
+	//}
 
-	bool Window::OnMouseMoved(MouseMoved& e)
-	{
-		Log::GetCoreLogger()->info(e.ToString());
-		if (auto spt = m_Application.lock())
-		{
-			//Log::GetCoreLogger()->info("Camera Position {0}", spt->m_Renderer->m_Camera->Position().x);
-		}
-		return true;
-	}
+	//bool Window::OnMouseMoved(MouseMoved& e)
+	//{
+	//	Log::GetCoreLogger()->info(e.ToString());
+	//	if (auto spt = m_Application.lock())
+	//	{
+	//		//Log::GetCoreLogger()->info("Camera Position {0}", spt->m_Renderer->m_Camera->Position().x);
+	//	}
+	//	return true;
+	//}
 
 	void Window::Terminate()
 	{
