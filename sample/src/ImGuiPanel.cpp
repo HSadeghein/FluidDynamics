@@ -39,7 +39,7 @@ namespace FluidEngine
 			}
 			else if (camera->GetCameraType() == CameraType::Perspective)
 			{
-				rotationCamera = static_cast<PerspectiveCamera*>(camera)->Rotation();
+				rotationCamera = static_cast<PerspectiveCamera*>(camera)->GetRotation();
 				ImGui::Text("Perspective Camera : ");
 				ImGui::InputFloat3("Camera Position", &positionCamera[0]);
 				ImGui::InputFloat3("Camera Rotation", &rotationCamera[0]);

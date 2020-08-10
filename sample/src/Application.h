@@ -77,16 +77,16 @@ namespace FluidEngine
 
 		bool OnRightMouseButtonReleased(RightMouseButtonReleased& e);
 
+
 		bool OnMouseMoved(MouseMoved& e);
 
 
 
 
-
-
-
-		bool m_LeftMouseButtonClikced = false;
-		bool m_RightMouseButtonClikced = false;
+		glm::vec2 m_DistanceToCenter = glm::vec2(0, 0);
+		float m_MouseSpeed = 1.0f;
+		bool m_LeftMouseButtonClicked = false;
+		bool m_RightMouseButtonClicked = false;
 		glm::vec3 m_EyePos = glm::vec3(0, 0, -50.0f);
 
 	};

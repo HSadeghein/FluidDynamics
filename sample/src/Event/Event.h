@@ -258,6 +258,7 @@ namespace FluidEngine
 		EVENT_CLASS_TYPE(LeftMouseReleased)
 	};
 
+
 	class MouseMoved : public IEvent
 	{
 	public:

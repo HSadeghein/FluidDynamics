@@ -128,11 +128,11 @@ namespace FluidEngine
 		meshData.Vertices.assign(vertices.begin(), vertices.end());
 		std::vector<int> indices;
 		int k1, k2;
-		for (int i = 0; i < stackCount; i++)
+		for (int i = 0; i <= stackCount; i++)
 		{
 			k1 = i * (sectorCount + 1);
 			k2 = k1 + sectorCount + 1;
-			for (int j = 0; j < sectorCount; j++, k1++, k2++)
+			for (int j = 0; j <= sectorCount; j++, k1++, k2++)
 			{
 				if (i != 0) 
 				{
