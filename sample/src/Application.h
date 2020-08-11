@@ -81,13 +81,26 @@ namespace FluidEngine
 		bool OnMouseMoved(MouseMoved& e);
 
 
+		enum class MouseState
+		{
+			None = 0,
+			LeftClicked,
+			RightClicked,
+			BothClicked
 
+		};
 
-		glm::vec2 m_DistanceToCenter = glm::vec2(0, 0);
-		float m_MouseSpeed = 1.0f;
+		glm::vec2 m_MouseDisplacement = glm::vec2(0, 0);
+		glm::vec2 m_MouseSpeed = glm::vec2(0, 0);
+		//X Y are for the left button and Z W are for the right button
+		glm::vec4 m_ClickedLocation = glm::vec4(0, 0, 0, 0);
 		bool m_LeftMouseButtonClicked = false;
 		bool m_RightMouseButtonClicked = false;
+		MouseState m_MouseState = MouseState::None;
 		glm::vec3 m_EyePos = glm::vec3(0, 0, -50.0f);
+
+
+
 
 	};
 }

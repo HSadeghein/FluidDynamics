@@ -117,12 +117,16 @@ namespace FluidEngine
 									   WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 									   if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
 									   {
-										   RightMouseButtonPressed e;
+										   double xPos, yPos;
+										   glfwGetCursorPos(window, &xPos, &yPos);
+										   RightMouseButtonPressed e(xPos, yPos);
 										   data.EventCallBack(e);
 									   }
 									   else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 									   {
-										   LeftMouseButtonPressed e;
+										   double xPos, yPos;
+										   glfwGetCursorPos(window, &xPos, &yPos);
+										   LeftMouseButtonPressed e(xPos, yPos);
 										   data.EventCallBack(e);
 									   }
 									   else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)

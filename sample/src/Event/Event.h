@@ -175,7 +175,7 @@ namespace FluidEngine
 	class RightMouseButtonPressed : public IEvent
 	{
 	public:
-		RightMouseButtonPressed()
+		RightMouseButtonPressed(int xPos, int yPos) : m_XPos(xPos), m_YPos(yPos)
 		{
 			type = EventTypes::RightMouseClicked;
 		}
@@ -191,13 +191,20 @@ namespace FluidEngine
 			return ss.str();
 		}
 
+		int GetX() { return m_XPos; }
+		int GetY() { return m_YPos; }
+
 		EVENT_CLASS_TYPE(RightMouseClicked)
+
+	private:
+		int m_XPos;
+		int m_YPos;
 	};
 
 	class LeftMouseButtonPressed : public IEvent
 	{
 	public:
-		LeftMouseButtonPressed()
+		LeftMouseButtonPressed(int xPos, int yPos) : m_XPos(xPos), m_YPos(yPos)
 		{
 			type = EventTypes::LeftMouseClicked;
 		}
@@ -213,7 +220,14 @@ namespace FluidEngine
 			return ss.str();
 		}
 
+		int GetX() { return m_XPos; }
+		int GetY() { return m_YPos; }
+
 		EVENT_CLASS_TYPE(LeftMouseClicked)
+
+	private:
+		int m_XPos;
+		int m_YPos;
 	};
 	class RightMouseButtonReleased : public IEvent
 	{

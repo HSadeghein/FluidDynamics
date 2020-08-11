@@ -5,13 +5,13 @@
 
 namespace FluidEngine
 {
-	Application *Application::m_AppInstance = nullptr;
-	void error_call_back(int error, const char *description)
+	Application* Application::m_AppInstance = nullptr;
+	void error_call_back(int error, const char* description)
 	{
 		Log::GetCoreLogger()->error("Error: {}", description);
 	}
 
-	Application &Application::Get()
+	Application& Application::Get()
 	{
 		if (m_AppInstance == nullptr)
 		{
@@ -77,13 +77,10 @@ namespace FluidEngine
 			{
 				glfwPollEvents();
 
-				if (m_LeftMouseButtonClicked)
+				if (m_MouseState == MouseState::LeftClicked)
 				{
 					glm::vec3 pos = m_Renderer->GetCamera()->GetCameraPosition();
 					auto camera = static_cast<PerspectiveCamera*>(m_Renderer->GetCamera());
-					glm::vec3 forward = camera->GetForward();
-					pos += forward * m_MouseSpeed;
-					camera->SetPosition(pos);
 
 
 					// Right vector
@@ -94,6 +91,8 @@ namespace FluidEngine
 					glm::vec3 direction = glm::vec3(glm::cos(m_VerticalAngle) * glm::sin(m_HorizentalAngle), glm::sin(m_VerticalAngle), glm::cos(m_VerticalAngle) * glm::cos(m_HorizentalAngle));
 					glm::vec3 up = glm::cross(right, direction);
 
+					pos += direction * m_MouseSpeed.y;
+					camera->SetPosition(pos);
 					camera->SetForward(direction);
 					camera->SetUp(up);
 					camera->SetRight(right);
@@ -117,7 +116,7 @@ namespace FluidEngine
 		Terminate();
 	}
 
-	void Application::OnEvent(IEvent &e)
+	void Application::OnEvent(IEvent& e)
 	{
 		EventDispatcher dispatcher(e);
 
@@ -133,21 +132,21 @@ namespace FluidEngine
 		dispatcher.Dispatch<MouseMoved>(std::bind(&Application::OnMouseMoved, this, std::placeholders::_1));
 	}
 
-	bool Application::OnWindowSizeChanged(WindowSizeChangedEvent &e)
+	bool Application::OnWindowSizeChanged(WindowSizeChangedEvent& e)
 	{
 
 		glViewport(0, 0, e.GetWdith(), e.GetHeight());
 		return true;
 	}
 
-	bool Application::OnWindowClose(WindowClosedEvent &e)
+	bool Application::OnWindowClose(WindowClosedEvent& e)
 	{
 		glfwSetWindowShouldClose(m_Window->GetWindow(), 1);
 		Log::GetCoreLogger()->info("Window closed");
 		return true;
 	}
 
-	bool Application::OnKeyPressed(KeyPressedEvent &e)
+	bool Application::OnKeyPressed(KeyPressedEvent& e)
 	{
 		if (e.GetKeyCode() == KeyCodes::Escape)
 		{
@@ -190,13 +189,13 @@ namespace FluidEngine
 		return true;
 	}
 
-	bool Application::OnKeyReleased(KeyReleasedEvent &e)
+	bool Application::OnKeyReleased(KeyReleasedEvent& e)
 	{
 		Log::GetCoreLogger()->info(e.ToString());
 		return true;
 	}
 
-	bool Application::OnKeyRepeated(KeyRepeatedEvent &e)
+	bool Application::OnKeyRepeated(KeyRepeatedEvent& e)
 	{
 		if (!ImGui::IsAnyWindowFocused())
 		{
@@ -232,48 +231,61 @@ namespace FluidEngine
 		return true;
 	}
 
-	bool Application::OnRightMouseButtonPressed(RightMouseButtonPressed &e)
+	bool Application::OnRightMouseButtonPressed(RightMouseButtonPressed& e)
 	{
 		if (!ImGui::IsAnyWindowFocused())
 		{
+			m_ClickedLocation.z = e.GetX();
+			m_ClickedLocation.w = e.GetY();
 			Log::GetCoreLogger()->info(e.ToString());
 			m_RightMouseButtonClicked = true;
+			if (m_MouseState == MouseState::None)
+				m_MouseState = MouseState::RightClicked;
+			else if (m_MouseState == MouseState::LeftClicked)
+				m_MouseState = MouseState::BothClicked;
 		}
 		return true;
 	}
 
-	bool Application::OnLeftMouseButtonPressed(LeftMouseButtonPressed &e)
+	bool Application::OnLeftMouseButtonPressed(LeftMouseButtonPressed& e)
 	{
 		if (!ImGui::IsAnyWindowFocused())
 		{
+			m_ClickedLocation.x = e.GetX();
+			m_ClickedLocation.y = e.GetY();
 			m_LeftMouseButtonClicked = true;
+			if (m_MouseState == MouseState::None)
+				m_MouseState = MouseState::LeftClicked;
+			else if (m_MouseState == MouseState::RightClicked)
+				m_MouseState = MouseState::BothClicked;
 		}
 		return true;
 	}
 
 
-	bool Application::OnMouseMoved(MouseMoved &e)
+	bool Application::OnMouseMoved(MouseMoved& e)
 	{
-
 		float dx = glm::radians(0.15f * static_cast<float>(e.GetX() - m_LastMousePos.x));
 		float dy = glm::radians(0.15f * static_cast<float>(e.GetY() - m_LastMousePos.y));
 
 		glm::vec2 center = glm::vec2(m_Window->GetWidth() / 2, m_Window->GetHeight() / 2);
-		m_DistanceToCenter = glm::vec2(e.GetX() - center.x, -e.GetY() + center.y);
-		m_DistanceToCenter /= glm::vec2(m_Window->GetWidth(), m_Window->GetHeight());
+		m_MouseDisplacement = glm::vec2(e.GetX() - m_LastMousePos.x, -e.GetY() + m_LastMousePos.y);
+		m_MouseSpeed.y = (m_ClickedLocation.y - e.GetY());
+		m_MouseSpeed.y *= GameTimer::GetReference()->DeltaTime() * 0.1f;
+		m_MouseSpeed.x = (e.GetX() - m_ClickedLocation.x);
+		m_MouseSpeed.x *= GameTimer::GetReference()->DeltaTime();
 
-		m_MouseSpeed = m_DistanceToCenter.y / 10.0f;
+		m_MouseDisplacement.x = glm::sign(m_MouseDisplacement.x);
+		m_MouseDisplacement.y = glm::sign(m_MouseDisplacement.y);
 		//m_MouseSpeed = glm::clamp(m_MouseSpeed, -5.0f, +5.0f);
 		if (!ImGui::IsAnyWindowFocused())
 		{
-			if (m_RightMouseButtonClicked || m_LeftMouseButtonClicked)
+			if (m_MouseState != MouseState::None && m_MouseState != MouseState::BothClicked)
 			{
-
 				m_HorizentalAngle -= dx;
-			
 
 			}
-			if (m_RightMouseButtonClicked)
+			if (m_MouseState == MouseState::RightClicked)
 			{
 				m_VerticalAngle -= dy;
 
@@ -295,27 +307,51 @@ namespace FluidEngine
 
 				camera->SetRotation(glm::vec3(glm::degrees(pitch) * glm::sign(direction.y), glm::degrees(yaw) * glm::sign(direction.x), 0));
 			}
+			else if (m_MouseState == MouseState::BothClicked)
+			{
+				auto camera = static_cast<PerspectiveCamera*>(m_Renderer->GetCamera());
+				auto pos = camera->GetCameraPosition();
+				auto right = camera->GetRight();
+				auto up = camera->GetUp();
+				pos += up * m_MouseDisplacement.y / 10.0f;
+				pos += right * m_MouseDisplacement.x / 10.0f;
+				camera->SetPosition(pos);
+			}
 		}
 		m_LastMousePos.x = e.GetX();
 		m_LastMousePos.y = e.GetY();
 		return true;
 	}
 
-	bool Application::OnRightMouseButtonReleased(RightMouseButtonReleased &e)
+	bool Application::OnRightMouseButtonReleased(RightMouseButtonReleased& e)
 	{
 		if (!ImGui::IsAnyWindowFocused())
 		{
 			m_RightMouseButtonClicked = false;
+
+			if (m_MouseState == MouseState::BothClicked)
+				m_MouseState = MouseState::LeftClicked;
+			else
+			{
+				m_MouseState = MouseState::None;
+			}
 		}
 		return true;
 	}
 
-	bool Application::OnLeftMouseButtonReleased(LeftMouseButtonReleased &e)
+	bool Application::OnLeftMouseButtonReleased(LeftMouseButtonReleased& e)
 	{
 		if (!ImGui::IsAnyWindowFocused())
 		{
 			m_LeftMouseButtonClicked = false;
-			m_MouseSpeed = 0;
+			m_MouseSpeed = glm::vec2(0, 0);
+
+			if (m_MouseState == MouseState::BothClicked)
+				m_MouseState = MouseState::RightClicked;
+			else
+			{
+				m_MouseState = MouseState::None;
+			}
 		}
 		return true;
 	}
