@@ -87,7 +87,7 @@ namespace FluidEngine
 					glm::vec3 direction = glm::vec3(glm::cos(m_VerticalAngle) * glm::sin(m_HorizentalAngle), glm::sin(m_VerticalAngle), glm::cos(m_VerticalAngle) * glm::cos(m_HorizentalAngle));
 					glm::vec3 up = glm::cross(right, direction);
 
-					pos += direction * m_MouseSpeed.y;
+					pos += direction * -m_MouseMovementSign.y * m_MouseSpeed.y;
 					camera->SetPosition(pos);
 					camera->SetForward(direction);
 					camera->SetUp(up);
@@ -261,14 +261,14 @@ namespace FluidEngine
 		float dy = glm::radians(0.15f * static_cast<float>(e.GetY() - m_LastMousePos.y));
 
 		glm::vec2 center = glm::vec2(m_Window->GetWidth() / 2, m_Window->GetHeight() / 2);
-		m_MouseDisplacement = glm::vec2(e.GetX() - m_LastMousePos.x, -e.GetY() + m_LastMousePos.y);
-		m_MouseSpeed.y = (m_ClickedLocation.y - e.GetY());
-		m_MouseSpeed.y *= GameTimer::GetReference()->DeltaTime() * 0.1f;
-		m_MouseSpeed.x = (e.GetX() - m_ClickedLocation.x);
-		m_MouseSpeed.x *= GameTimer::GetReference()->DeltaTime();
+		m_MouseMovementSign = glm::vec2(e.GetX() - m_LastMousePos.x, -e.GetY() + m_LastMousePos.y);
+		//m_MouseSpeed.y = (m_ClickedLocation.y - e.GetY());
+		//m_MouseSpeed.y *= GameTimer::GetReference()->DeltaTime() * 0.1f;
+		//m_MouseSpeed.x = (e.GetX() - m_ClickedLocation.x);
+		//m_MouseSpeed.x *= GameTimer::GetReference()->DeltaTime();
 
-		m_MouseDisplacement.x = glm::sign(m_MouseDisplacement.x);
-		m_MouseDisplacement.y = glm::sign(m_MouseDisplacement.y);
+		m_MouseMovementSign.x = glm::sign(m_MouseMovementSign.x);
+		m_MouseMovementSign.y = glm::sign(m_MouseMovementSign.y);
 		//m_MouseSpeed = glm::clamp(m_MouseSpeed, -5.0f, +5.0f);
 		if (!ImGui::IsAnyWindowFocused())
 		{
@@ -303,8 +303,8 @@ namespace FluidEngine
 				auto pos = camera->GetCameraPosition();
 				auto right = camera->GetRight();
 				auto up = camera->GetUp();
-				pos += up * m_MouseDisplacement.y / 10.0f;
-				pos += right * m_MouseDisplacement.x / 10.0f;
+				pos += up * m_MouseMovementSign.y / 10.0f;
+				pos += right * m_MouseMovementSign.x / 10.0f;
 				camera->SetPosition(pos);
 			}
 		}
@@ -334,7 +334,7 @@ namespace FluidEngine
 		if (!ImGui::IsAnyWindowFocused())
 		{
 			m_LeftMouseButtonClicked = false;
-			m_MouseSpeed = glm::vec2(0, 0);
+			//m_MouseSpeed = glm::vec2(0, 0);
 
 			if (m_MouseState == MouseState::BothClicked)
 				m_MouseState = MouseState::RightClicked;

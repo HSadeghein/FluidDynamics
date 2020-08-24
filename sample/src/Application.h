@@ -90,8 +90,8 @@ namespace FluidEngine
 
 		};
 
-		glm::vec2 m_MouseDisplacement = glm::vec2(0, 0);
-		glm::vec2 m_MouseSpeed = glm::vec2(0, 0);
+		glm::vec2 m_MouseMovementSign = glm::vec2(0, 0);
+		glm::vec2 m_MouseSpeed = glm::vec2(GameTimer::GetReference()->DeltaTime(), GameTimer::GetReference()->DeltaTime() * 0.1f);
 		//X Y are for the left button and Z W are for the right button
 		glm::vec4 m_ClickedLocation = glm::vec4(0, 0, 0, 0);
 		bool m_LeftMouseButtonClicked = false;
