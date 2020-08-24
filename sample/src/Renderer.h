@@ -36,6 +36,7 @@ namespace FluidEngine
 	public:
 		Renderer(Window *window);
 		~Renderer();
+		void Init();
 		void Draw();
 		void Clear() const;
 		void Tick();

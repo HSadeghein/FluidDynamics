@@ -5,13 +5,13 @@
 
 namespace FluidEngine
 {
-	Application* Application::m_AppInstance = nullptr;
-	void error_call_back(int error, const char* description)
+	Application *Application::m_AppInstance = nullptr;
+	void error_call_back(int error, const char *description)
 	{
 		Log::GetCoreLogger()->error("Error: {}", description);
 	}
 
-	Application& Application::Get()
+	Application &Application::Get()
 	{
 		if (m_AppInstance == nullptr)
 		{
@@ -60,16 +60,13 @@ namespace FluidEngine
 		{
 			int height = m_Window->GetHeight();
 			int width = m_Window->GetWidth();
+			//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
-			glFrontFace(GL_CCW);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-			std::unique_ptr<Mesh> InstancedMesh = std::make_unique<Mesh>(m_GeomGenerator.CreateSphere(5, 50, 50));
+			std::unique_ptr<Mesh> InstancedMesh = std::make_unique<Mesh>(m_GeomGenerator.CreateSphere(10, 30, 30));
 			m_Renderer = std::make_unique<Renderer>(m_Window.get());
-			m_Renderer->SetCamera(CameraType::Perspective, 45, (float)(width / height), 0.01, 1000.0f);
-			m_Renderer->SetLight(glm::vec3(0, 10, -10), glm::vec4(1), 0.1, 0.5);
+			m_Renderer->Init();
+			m_Renderer->SetCamera(CameraType::Perspective, 45, (float)(width / height), 10, 1000.0f);
+			m_Renderer->SetLight(glm::vec3(0, 0, -50), glm::vec4(1), 0.1, 0.5);
 			std::shared_ptr<Material> material1 = std::move(m_Renderer->CreateMaterial("material1", "shader/vertex.vert", "shader/pixel.frag", "", glm::vec4(1), true));
 			m_Renderer->SetUpGPUInstancing(InstancedMesh.get(), 10, material1);
 
@@ -80,8 +77,7 @@ namespace FluidEngine
 				if (m_MouseState == MouseState::LeftClicked)
 				{
 					glm::vec3 pos = m_Renderer->GetCamera()->GetCameraPosition();
-					auto camera = static_cast<PerspectiveCamera*>(m_Renderer->GetCamera());
-
+					auto camera = static_cast<PerspectiveCamera *>(m_Renderer->GetCamera());
 
 					// Right vector
 					glm::vec3 right = glm::vec3(
@@ -100,23 +96,21 @@ namespace FluidEngine
 					float yaw = glm::acos(glm::dot(right, glm::vec3(-1, 0, 0)));
 
 					camera->SetRotation(glm::vec3(glm::degrees(pitch) * glm::sign(direction.y), glm::degrees(yaw) * glm::sign(direction.x), 0));
-
 				}
 				m_Renderer->Tick();
 				m_Renderer->CalculateFrameStats();
 				m_Renderer->RenderImgui(m_Window.get());
 				m_Renderer->Clear();
-
-				//Log::GetCoreLogger()->info("is fouced is {0}", ImGui::IsAnyWindowFocused());
 				m_Renderer->Draw();
 
 				glfwSwapBuffers(m_Window->GetWindow());
 			}
 		}
+
 		Terminate();
 	}
 
-	void Application::OnEvent(IEvent& e)
+	void Application::OnEvent(IEvent &e)
 	{
 		EventDispatcher dispatcher(e);
 
@@ -132,21 +126,20 @@ namespace FluidEngine
 		dispatcher.Dispatch<MouseMoved>(std::bind(&Application::OnMouseMoved, this, std::placeholders::_1));
 	}
 
-	bool Application::OnWindowSizeChanged(WindowSizeChangedEvent& e)
+	bool Application::OnWindowSizeChanged(WindowSizeChangedEvent &e)
 	{
-
 		glViewport(0, 0, e.GetWdith(), e.GetHeight());
 		return true;
 	}
 
-	bool Application::OnWindowClose(WindowClosedEvent& e)
+	bool Application::OnWindowClose(WindowClosedEvent &e)
 	{
 		glfwSetWindowShouldClose(m_Window->GetWindow(), 1);
 		Log::GetCoreLogger()->info("Window closed");
 		return true;
 	}
 
-	bool Application::OnKeyPressed(KeyPressedEvent& e)
+	bool Application::OnKeyPressed(KeyPressedEvent &e)
 	{
 		if (e.GetKeyCode() == KeyCodes::Escape)
 		{
@@ -160,28 +153,28 @@ namespace FluidEngine
 			if (e.GetKeyCode() == KeyCodes::W)
 			{
 				glm::vec3 pos = m_Renderer->GetCamera()->GetCameraPosition();
-				glm::vec3 forward = static_cast<PerspectiveCamera*>(m_Renderer->GetCamera())->GetForward();
+				glm::vec3 forward = static_cast<PerspectiveCamera *>(m_Renderer->GetCamera())->GetForward();
 				pos += forward;
 				m_Renderer->GetCamera()->SetPosition(pos);
 			}
 			else if (e.GetKeyCode() == KeyCodes::S)
 			{
 				glm::vec3 pos = m_Renderer->GetCamera()->GetCameraPosition();
-				glm::vec3 forward = static_cast<PerspectiveCamera*>(m_Renderer->GetCamera())->GetForward();
+				glm::vec3 forward = static_cast<PerspectiveCamera *>(m_Renderer->GetCamera())->GetForward();
 				pos -= forward;
 				m_Renderer->GetCamera()->SetPosition(pos);
 			}
 			else if (e.GetKeyCode() == KeyCodes::A)
 			{
 				glm::vec3 pos = m_Renderer->GetCamera()->GetCameraPosition();
-				glm::vec3 right = static_cast<PerspectiveCamera*>(m_Renderer->GetCamera())->GetRight();
+				glm::vec3 right = static_cast<PerspectiveCamera *>(m_Renderer->GetCamera())->GetRight();
 				pos -= right;
 				m_Renderer->GetCamera()->SetPosition(pos);
 			}
 			else if (e.GetKeyCode() == KeyCodes::D)
 			{
 				glm::vec3 pos = m_Renderer->GetCamera()->GetCameraPosition();
-				glm::vec3 right = static_cast<PerspectiveCamera*>(m_Renderer->GetCamera())->GetRight();
+				glm::vec3 right = static_cast<PerspectiveCamera *>(m_Renderer->GetCamera())->GetRight();
 				pos += right;
 				m_Renderer->GetCamera()->SetPosition(pos);
 			}
@@ -189,41 +182,41 @@ namespace FluidEngine
 		return true;
 	}
 
-	bool Application::OnKeyReleased(KeyReleasedEvent& e)
+	bool Application::OnKeyReleased(KeyReleasedEvent &e)
 	{
 		Log::GetCoreLogger()->info(e.ToString());
 		return true;
 	}
 
-	bool Application::OnKeyRepeated(KeyRepeatedEvent& e)
+	bool Application::OnKeyRepeated(KeyRepeatedEvent &e)
 	{
 		if (!ImGui::IsAnyWindowFocused())
 		{
 			if (e.GetKeyCode() == KeyCodes::W)
 			{
 				glm::vec3 pos = m_Renderer->GetCamera()->GetCameraPosition();
-				glm::vec3 forward = static_cast<PerspectiveCamera*>(m_Renderer->GetCamera())->GetForward();
+				glm::vec3 forward = static_cast<PerspectiveCamera *>(m_Renderer->GetCamera())->GetForward();
 				pos += forward;
 				m_Renderer->GetCamera()->SetPosition(pos);
 			}
 			else if (e.GetKeyCode() == KeyCodes::S)
 			{
 				glm::vec3 pos = m_Renderer->GetCamera()->GetCameraPosition();
-				glm::vec3 forward = static_cast<PerspectiveCamera*>(m_Renderer->GetCamera())->GetForward();
+				glm::vec3 forward = static_cast<PerspectiveCamera *>(m_Renderer->GetCamera())->GetForward();
 				pos -= forward;
 				m_Renderer->GetCamera()->SetPosition(pos);
 			}
 			else if (e.GetKeyCode() == KeyCodes::A)
 			{
 				glm::vec3 pos = m_Renderer->GetCamera()->GetCameraPosition();
-				glm::vec3 right = static_cast<PerspectiveCamera*>(m_Renderer->GetCamera())->GetRight();
+				glm::vec3 right = static_cast<PerspectiveCamera *>(m_Renderer->GetCamera())->GetRight();
 				pos -= right;
 				m_Renderer->GetCamera()->SetPosition(pos);
 			}
 			else if (e.GetKeyCode() == KeyCodes::D)
 			{
 				glm::vec3 pos = m_Renderer->GetCamera()->GetCameraPosition();
-				glm::vec3 right = static_cast<PerspectiveCamera*>(m_Renderer->GetCamera())->GetRight();
+				glm::vec3 right = static_cast<PerspectiveCamera *>(m_Renderer->GetCamera())->GetRight();
 				pos += right;
 				m_Renderer->GetCamera()->SetPosition(pos);
 			}
@@ -231,7 +224,7 @@ namespace FluidEngine
 		return true;
 	}
 
-	bool Application::OnRightMouseButtonPressed(RightMouseButtonPressed& e)
+	bool Application::OnRightMouseButtonPressed(RightMouseButtonPressed &e)
 	{
 		if (!ImGui::IsAnyWindowFocused())
 		{
@@ -247,7 +240,7 @@ namespace FluidEngine
 		return true;
 	}
 
-	bool Application::OnLeftMouseButtonPressed(LeftMouseButtonPressed& e)
+	bool Application::OnLeftMouseButtonPressed(LeftMouseButtonPressed &e)
 	{
 		if (!ImGui::IsAnyWindowFocused())
 		{
@@ -262,8 +255,7 @@ namespace FluidEngine
 		return true;
 	}
 
-
-	bool Application::OnMouseMoved(MouseMoved& e)
+	bool Application::OnMouseMoved(MouseMoved &e)
 	{
 		float dx = glm::radians(0.15f * static_cast<float>(e.GetX() - m_LastMousePos.x));
 		float dy = glm::radians(0.15f * static_cast<float>(e.GetY() - m_LastMousePos.y));
@@ -283,12 +275,10 @@ namespace FluidEngine
 			if (m_MouseState != MouseState::None && m_MouseState != MouseState::BothClicked)
 			{
 				m_HorizentalAngle -= dx;
-
 			}
 			if (m_MouseState == MouseState::RightClicked)
 			{
 				m_VerticalAngle -= dy;
-
 
 				// Right vector
 				glm::vec3 right = glm::vec3(
@@ -298,7 +288,7 @@ namespace FluidEngine
 				glm::vec3 direction = glm::vec3(glm::cos(m_VerticalAngle) * glm::sin(m_HorizentalAngle), glm::sin(m_VerticalAngle), glm::cos(m_VerticalAngle) * glm::cos(m_HorizentalAngle));
 				glm::vec3 up = glm::cross(right, direction);
 
-				auto camera = static_cast<PerspectiveCamera*>(m_Renderer->GetCamera());
+				auto camera = static_cast<PerspectiveCamera *>(m_Renderer->GetCamera());
 				camera->SetForward(direction);
 				camera->SetUp(up);
 				camera->SetRight(right);
@@ -309,7 +299,7 @@ namespace FluidEngine
 			}
 			else if (m_MouseState == MouseState::BothClicked)
 			{
-				auto camera = static_cast<PerspectiveCamera*>(m_Renderer->GetCamera());
+				auto camera = static_cast<PerspectiveCamera *>(m_Renderer->GetCamera());
 				auto pos = camera->GetCameraPosition();
 				auto right = camera->GetRight();
 				auto up = camera->GetUp();
@@ -323,7 +313,7 @@ namespace FluidEngine
 		return true;
 	}
 
-	bool Application::OnRightMouseButtonReleased(RightMouseButtonReleased& e)
+	bool Application::OnRightMouseButtonReleased(RightMouseButtonReleased &e)
 	{
 		if (!ImGui::IsAnyWindowFocused())
 		{
@@ -339,7 +329,7 @@ namespace FluidEngine
 		return true;
 	}
 
-	bool Application::OnLeftMouseButtonReleased(LeftMouseButtonReleased& e)
+	bool Application::OnLeftMouseButtonReleased(LeftMouseButtonReleased &e)
 	{
 		if (!ImGui::IsAnyWindowFocused())
 		{

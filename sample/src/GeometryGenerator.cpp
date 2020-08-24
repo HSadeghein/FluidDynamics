@@ -62,30 +62,53 @@ namespace FluidEngine
 		uint32_t i[36];
 
 		// Fill in the front face index data
-		i[0] = 0; i[1] = 1; i[2] = 2;
-		i[3] = 0; i[4] = 2; i[5] = 3;
+		i[0] = 0;
+		i[1] = 1;
+		i[2] = 2;
+		i[3] = 0;
+		i[4] = 2;
+		i[5] = 3;
 
 		// Fill in the back face index data
-		i[6] = 4; i[7] = 5; i[8] = 6;
-		i[9] = 4; i[10] = 6; i[11] = 7;
+		i[6] = 4;
+		i[7] = 5;
+		i[8] = 6;
+		i[9] = 4;
+		i[10] = 6;
+		i[11] = 7;
 
 		// Fill in the top face index data
-		i[12] = 8; i[13] = 9; i[14] = 10;
-		i[15] = 8; i[16] = 10; i[17] = 11;
+		i[12] = 8;
+		i[13] = 9;
+		i[14] = 10;
+		i[15] = 8;
+		i[16] = 10;
+		i[17] = 11;
 
 		// Fill in the bottom face index data
-		i[18] = 12; i[19] = 13; i[20] = 14;
-		i[21] = 12; i[22] = 14; i[23] = 15;
+		i[18] = 12;
+		i[19] = 13;
+		i[20] = 14;
+		i[21] = 12;
+		i[22] = 14;
+		i[23] = 15;
 
 		// Fill in the left face index data
-		i[24] = 16; i[25] = 17; i[26] = 18;
-		i[27] = 16; i[28] = 18; i[29] = 19;
+		i[24] = 16;
+		i[25] = 17;
+		i[26] = 18;
+		i[27] = 16;
+		i[28] = 18;
+		i[29] = 19;
 
 		// Fill in the right face index data
-		i[30] = 20; i[31] = 21; i[32] = 22;
-		i[33] = 20; i[34] = 22; i[35] = 23;
+		i[30] = 20;
+		i[31] = 21;
+		i[32] = 22;
+		i[33] = 20;
+		i[34] = 22;
+		i[35] = 23;
 		meshData.Indices.assign(&i[0], &i[36]);
-
 
 		for (int i = 0; i < numOfSubdivision; i++)
 		{
@@ -99,60 +122,84 @@ namespace FluidEngine
 	{
 		MeshData meshData;
 		std::vector<Vertex> vertices;
-		float x, y, z, xy, nx, ny, nz, tx, ty, tz, u, v;
+		float x, y, z, xz, nx, ny, nz, tx, ty, tz, u, v;
 		float inv_rad = 1.0 / radius;
-		float sectorStep = 2 * PI / sectorCount;
-		float stackStep = PI / stackCount;
-		float stackAngle, sectorAngle;
-		for (int i = 0; i <= stackCount; i++)
+		float thetaStep = 2 * PI / sectorCount;
+		float phiStep = PI / stackCount;
+		float phi, theta;
+
+		Vertex northPoleVertex(glm::vec3(0, radius, 0), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0), glm::vec2(0));
+		Vertex southPoleVertex(glm::vec3(0, -radius, 0), glm::vec3(0, -1, 0), glm::vec3(-1, 0, 0), glm::vec2(0, 1));
+
+		vertices.push_back(northPoleVertex);
+		for (int i = 1; i <= stackCount - 1; i++)
 		{
-			stackAngle = PI / 2 - stackStep * i;
-			xy = radius * glm::cos(stackAngle);
-			z = radius * glm::sin(stackAngle);
+			phi = phiStep * (float)i;
 			for (int j = 0; j <= sectorCount; j++)
 			{
-				sectorAngle = j * sectorStep;
-				x = xy * glm::cos(sectorAngle);
-				y = xy * glm::sin(sectorAngle);
+				theta = j * thetaStep;
+				x = radius * glm::sin(phi) * glm::cos(theta);
+				y = radius * glm::cos(phi);
+				z = radius * glm::sin(phi) * glm::sin(theta);
+
+				tx = -radius * glm::sin(phi) * glm::sin(theta);
+				ty = 0;
+				tz = radius * glm::sin(phi) * glm::cos(theta);
+				glm::vec3 tangent = glm::normalize(glm::vec3(tx, ty, tz));
+
 				nx = x * inv_rad;
 				ny = y * inv_rad;
-				nz = z * inv_rad;
-				tx = glm::sin(sectorAngle) * glm::cos(stackAngle);
-				ty = glm::sin(sectorAngle) * glm::sin(stackAngle);
-				tz = glm::cos(sectorAngle);
+				nz = -z * inv_rad;
+				glm::vec3 normal = glm::normalize(glm::vec3(nx, ny, nz));
+
 				v = (float)i / stackCount;
 				u = (float)j / sectorCount;
-				vertices.push_back(Vertex(glm::vec3(x, y, z), glm::vec3(nx, ny, nz), glm::vec3(0), glm::vec2(u, v)));
+
+				vertices.push_back(Vertex(glm::vec3(x, y, z), normal, tangent, glm::vec2(u, v)));
 			}
 		}
+		vertices.push_back(southPoleVertex);
+
 		meshData.Vertices.assign(vertices.begin(), vertices.end());
 		std::vector<int> indices;
-		int k1, k2;
-		for (int i = 0; i <= stackCount; i++)
+
+		for (int i = 1; i <= sectorCount; i++)
 		{
-			k1 = i * (sectorCount + 1);
-			k2 = k1 + sectorCount + 1;
-			for (int j = 0; j <= sectorCount; j++, k1++, k2++)
+			indices.push_back(0);
+			indices.push_back(i);
+			indices.push_back(i + 1);
+		}
+
+		int baseIndex = 1;
+		int ringVertex = sectorCount + 1;
+		for (int i = 0; i < stackCount - 2; i++)
+		{
+			for (int j = 0; j < sectorCount; j++)
 			{
-				if (i != 0) 
-				{
-					indices.push_back(k1);
-					indices.push_back(k2);
-					indices.push_back(k1 + 1);
-				}
-				if (i != (sectorCount - 1))
-				{
-					indices.push_back(k1 + 1);
-					indices.push_back(k2);
-					indices.push_back(k2 + 1);
-				}
+				indices.push_back(baseIndex + ringVertex * i + j);
+				indices.push_back(baseIndex + ringVertex * (i + 1) + j);
+				indices.push_back(baseIndex + ringVertex * i + j + 1);
+
+				indices.push_back(baseIndex + ringVertex * i + j + 1);
+				indices.push_back(baseIndex + ringVertex * (i + 1) + j);
+				indices.push_back(baseIndex + ringVertex * (i + 1) + j + 1);
 			}
 		}
+
+		int southPoleIndex = meshData.Vertices.size() - 1;
+		baseIndex = southPoleIndex - ringVertex;
+		for (int i = 0; i < sectorCount; i++)
+		{
+			indices.push_back(southPoleIndex);
+			indices.push_back(baseIndex + i + 1);
+			indices.push_back(baseIndex + i);
+		}
+
 		meshData.Indices.assign(indices.begin(), indices.end());
 		return meshData;
 	}
 
-	void GeometryGenerator::Subdivide(MeshData& meshData)
+	void GeometryGenerator::Subdivide(MeshData &meshData)
 	{
 		//				v1
 		//			   /  \
@@ -161,7 +208,6 @@ namespace FluidEngine
 		//          /		 \
 		//         /		  \
 		//		  v0----m2----v2
-
 
 		std::cout << "HI";
 		MeshData meshDataCopy = meshData;
@@ -203,10 +249,9 @@ namespace FluidEngine
 			meshData.Indices.push_back(i * 6 + 4);
 			meshData.Indices.push_back(i * 6 + 2);
 		}
-
 	}
 
-	GeometryGenerator::Vertex GeometryGenerator::CreateMidPoint(const Vertex& v0, const Vertex& v1)
+	GeometryGenerator::Vertex GeometryGenerator::CreateMidPoint(const Vertex &v0, const Vertex &v1)
 	{
 		glm::vec3 pos0 = v0.Position;
 		glm::vec3 pos1 = v1.Position;
@@ -230,4 +275,4 @@ namespace FluidEngine
 		return v;
 	}
 
-}
+} // namespace FluidEngine

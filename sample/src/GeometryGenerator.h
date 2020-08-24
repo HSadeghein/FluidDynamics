@@ -4,7 +4,7 @@
 #include <glm/vec2.hpp>
 #include <glm/glm.hpp>
 
-#define PI 3.14
+#define PI 3.14159265359
 
 namespace FluidEngine
 {

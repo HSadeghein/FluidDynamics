@@ -27,12 +27,19 @@ namespace FluidEngine
 		m_ImguiPanel = std::make_unique<ImGuiPanel>(window->GetWindow());
 		m_Timer = GameTimer::GetReference();
 		m_Timer->Reset();
-
 	}
 
 	Renderer::~Renderer()
 	{
 		std::cout << "Renderer is destroyed" << std::endl;
+	}
+
+	void Renderer::Init()
+	{
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CCW);
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	void Renderer::RenderImgui(Window* window)
@@ -58,7 +65,7 @@ namespace FluidEngine
 		m_Materials[nameID]->Blend(GL_ONE, GL_ZERO);
 		m_Materials[nameID]->SetUniformFloat("ambientStrength", m_Light->AmbientStrength());
 		m_Materials[nameID]->SetUniformFloat("specularStrength", m_Light->SpecularStrength());
-		m_Materials[nameID]->SetUniformFloat3("lightDirection", m_Light->LightPosition());
+		m_Materials[nameID]->SetUniformFloat3("lightPosition", m_Light->LightPosition());
 		m_Materials[nameID]->SetUniformFloat3("cameraPosition", m_Camera->Position());
 		m_Materials[nameID]->SetUniformFloat4("lightColor", m_Light->LightColor());
 		return m_Materials[nameID];
@@ -114,7 +121,7 @@ namespace FluidEngine
 		m_View = m_Camera->CalcViewMatrix();
 		for (auto& gpuInstancing : m_GPUInstancings)
 		{
-			gpuInstancing->UpdateMaterial();
+			gpuInstancing->UpdateMaterial(m_Camera->Position());
 			gpuInstancing->OnUpdate(m_Projection, m_View);
 			gpuInstancing->Draw();
 		}
@@ -123,7 +130,7 @@ namespace FluidEngine
 
 	void Renderer::Clear() const
 	{
-		GL_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
+		GL_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 	}
 
 	void Renderer::Tick()
